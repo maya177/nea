@@ -1,0 +1,16 @@
+<meta charset="UTF-8">
+<title>Trinity software</title>
+</head>
+<body>
+<div>
+<h1>Trinity software login</h1>
+<!--action attribute specifies where to send form data when form is submitted - this dynamically builds url for specific function login-->
+<form action="{{url_for('login')}}"method="post">
+    <label>username</label>
+    <input type="text"name="username"id="username"required>
+    <label>password</label>
+    <input type="password"name="password"id="password"required>
+    <input type="submit"value="Login">
+</form>
+</div>
+</body>
