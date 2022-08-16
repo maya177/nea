@@ -1,16 +1,23 @@
-<meta charset="UTF-8">
-<title>Trinity software</title>
-</head>
-<body>
-<div>
-<h1>Trinity software login</h1>
-<!--action attribute specifies where to send form data when form is submitted - this dynamically builds url for specific function login-->
-<form action="{{url_for('login')}}"method="post">
-    <label>username</label>
-    <input type="text"name="username"id="username"required>
-    <label>password</label>
-    <input type="password"name="password"id="password"required>
-    <input type="submit"value="Login">
-</form>
+<link rel="stylesheet" type="text/css" href="./static/css/login.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<div class="bold-line"></div>
+<div class="container">
+  <div class="window">
+    <div class="overlay"></div>
+    <div class="content">
+      <div class="welcome">Login</div>
+      <div class="subtitle">Login to get started!</div>
+      <div class="input-fields">
+        <form method="POST" action="">
+            <input type="text" placeholder="Username" class="input-line full-width"></input>
+            <input type="email" placeholder="Email" class="input-line full-width"></input>
+            <input type="password" placeholder="Password" class="input-line full-width"></input>
+            <input type="submit" placeholder = "Submit" class = "ghost-round full-width">
+        </form>
+
+      </div>
+      <div><button class='ghost-round full-width'>Create Account</button></div>
+    </div>
+  </div>
 </div>
-</body>

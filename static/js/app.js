@@ -90,6 +90,7 @@ function stopRecording() {
     gumStream.getAudioTracks()[0].stop();
 
     //create the wav blob and pass it on to createDownloadLink
+
     rec.exportWAV(createDownloadLink)
 }
 
@@ -108,19 +109,21 @@ function createDownloadLink(blob) {
     au.src = url;
 
     //save to disk link
-    link.href = url;
-    link.download = filename+".wav"; //download forces the browser to donwload the file using the  filename
-    link.innerHTML = "Save to disk";
+    //link.href = url;
+    //link.download = filename+".wav"; //download forces the browser to donwload the file using the  filename
+    //link.innerHTML = "Save to disk";
 
     //add the new audio element to li
     li.appendChild(au);
 
     //add the filename to the li
-    li.appendChild(document.createTextNode(filename+".wav "))
+   // li.appendChild(document.createTextNode(filename+".wav "))
 
     //add the save to disk link to li
-    li.appendChild(link);
+   // li.appendChild(link);
 
     //add the li element to the ol
     recordingsList.appendChild(li);
 }
+
+//https://stackoverflow.com/questions/60032983/record-voice-with-recorder-js-and-upload-it-to-python-flask-server-but-wav-file
