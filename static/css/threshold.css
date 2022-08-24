@@ -1,0 +1,108 @@
+/*-webkit-appearance is used for specifying browser based styles of elements*/
+.audio-duration {
+    height: 10px;
+    width: 300px;
+    margin: 30px 0;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 1px 1px 1px grey inset;
+    background: rgb(214, 213, 213);
+  }
+  
+  .audio-duration-indicator {
+    border-radius: 10px;
+    height: 100%;
+    background-color: rgb(255, 30, 180);
+    width: 0;
+  }
+  
+  input[type=range] {
+    -webkit-appearance: none;
+    background: transparent;
+  }
+  
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    transition: transform 300ms;
+  }
+  
+  input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.3);
+  }
+  
+  .audio-duration-toggler {
+    width: 100%;
+    position: absolute;
+    height: 20px;
+    top: 0;
+    margin-top: -5px;
+    left: 0;
+  }
+  
+  .audio-duration-toggler::-webkit-slider-thumb {
+    border: 1px solid grey;
+    height: 20px;
+    width: 10px;
+    border-radius: 3px;
+    background: #ffffff;
+    cursor: pointer;
+    border-radius: 30px;
+    margin-left: -3px;
+  }
+  
+  .volume {
+    width: 300px;
+    height: 3px;
+    background-color: rgb(224, 224, 224);
+    border-radius: 5px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .volume-indicator {
+    width: 100%;
+    background-color: rgb(68, 3, 47);
+    height: 100%;
+  }
+  
+  .volume-toggler {
+    position: absolute;
+    top: 0;
+    margin-top: -4px;
+    width: 100%;
+  }
+  
+  .volume-toggler::-webkit-slider-thumb {
+    border: 1px solid rgb(224, 224, 224);
+    background: white;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+    margin-left: -3px;
+  }
+  
+  .btn {
+    border: none;
+    padding: 10px;
+    width: 80px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  
+  .btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+  }
+  
+  .btn-play {
+    background-color: rgb(32, 189, 84);
+    color: white;
+  }
+  
+  .btn-pause {
+    background-color: rgb(255, 153, 0);
+    color: white;
+  }

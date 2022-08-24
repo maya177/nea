@@ -1,0 +1,9 @@
+need to send teachers to db
+
+work on database attribute diagram
+
+then work on threshold
+
+look at ajax for moving between languages
+
+write up ab using dynamic forms n multi dictionaries bc it was so difficult

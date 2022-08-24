@@ -1,10 +1,11 @@
-from flask import Flask,request,render_template,session,url_for,redirect
+import json
+from operator import truediv
+from flask import Flask,request,render_template,session,url_for,redirect,jsonify
 from flask_session import Session
 from tempfile import mkdtemp
 import hashlib
 import sqlite3
 import re
-
 
 app = Flask(__name__)
 
@@ -67,8 +68,14 @@ def signup():
 
     return render_template("signup.html")
 
-@app.route('/addTeachers',methods=['POST','GET'])
+@app.route('/addTeachers', methods=['POST','GET'])
 def addTeachers():
+    if request.method=='POST':
+        print("getting data")
+        im_dict = request.form
+        #multi dictionary when multi field form?
+        return(f'<h1>{im_dict}</h1>')
+
     return render_template("addTeachers.html")
 
 @app.route('/login',methods=['POST','GET'])
@@ -89,10 +96,11 @@ def login():
 
         cur.execute("SELECT email, passwrd, firstName, lastName FROM students where email = (?)", [email])
         studentrow = cur.fetchone()
-        
-        print(studentrow[1])
-        print(passwrd.hexdigest())
-        print(len(studentrow))
+        conn.close()
+
+        print(email)
+        print(studentrow[2])
+        print(studentrow[3])
 
         try:
             if passwrd.hexdigest() == studentrow[1]:
@@ -100,7 +108,7 @@ def login():
                 session["email"] = email
                 session["firstName"] = studentrow[2]
                 session["lastName"] = studentrow[3]
-                conn.close()
+                print("working")
                 return render_template("home.html")
             else:
                 return("incorrect password")
@@ -120,21 +128,44 @@ def logout():
 def home():
     return render_template("home.html")
 
+
 @app.route("/recorder")
 def recorder():
     return render_template("recorder.html")
 
 
-@app.route("/threshold")
+@app.route("/threshold", methods=['GET','POST'])
 def threshold():
-    return render_template("threshold.html")
+    if request.method == 'POST':
+        try:
+            #cannot use request.get_json()
+            data = json.loads(request.data)
+            return data
+        except ValueError:
+            return "Error" 
+    else:
+        return render_template("threshold.html")
 
-@app.route("/profile")
-def profile():
-    return render_template("profile.html")
+@app.route("/userprofile",methods=['POST','GET'])
+def userprofile():
+    conn = get_db_connection()
+    cur = conn.cursor()
+  
+    if "email" in session:
+        email = session["email"]
 
+        cur.execute("SELECT email, firstName, lastName FROM students where email = (?)", [email])
+        studentrow = cur.fetchone()
+        conn.close()
+        print(studentrow[0])
+        print(studentrow[1])
+        print(studentrow[2])
+        
+        return render_template('userprofile.html', email = studentrow[0], firstName = studentrow[1], lastName = studentrow[2])
+    else:
+        return "not logged in"
 
 if __name__ =='__main__':
-    app.run(host='localhost', port=5002)
+    app.run(host='localhost', port=5002, debug=True)
 
             #return(session["firstName"])

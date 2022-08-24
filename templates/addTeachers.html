@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Dynamic Form Example</title>
+        <script
+                src="https://code.jquery.com/jquery-1.12.4.min.js"
+                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+                crossorigin="anonymous"></script>
+    </head>
+    <body>
+        Products:
+        <form action="" method="post">
+            <div id="products"></div>
+            <button id="add_item" type="button">Add item</button>
+            <input type="submit" value="Submit">
+        </form>
+        <script>
+            $(document).ready(function(){
+                var count_item = 0;
+                $("#add_item").on("click", function(){
+                    $("<input/>").attr({ type: "text", placeholder: "Enter teacher name",
+                        name: "item_"+count_item+1}).appendTo("#products").wrap($("<div/>"));
+                    $("<input/>").attr({ type: "text", placeholder: "Enter teacher email",
+                    name: "item_"+count_item+2}).appendTo("#products").wrap($("<div/>"));
+                    count_item += 1;
+                    console.log(count_item)
+                });
+            })
+        </script>
+    </body>
+</html>
