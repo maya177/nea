@@ -20,9 +20,10 @@
                 var count_item = 0;
                 $("#add_item").on("click", function(){
                     $("<input/>").attr({ type: "text", placeholder: "Enter teacher name",
-                        name: "item_"+count_item+1}).appendTo("#products").wrap($("<div/>"));
+                        name: count_item}).appendTo("#products").wrap($("<div/>"));
+                    count_item += 1;
                     $("<input/>").attr({ type: "text", placeholder: "Enter teacher email",
-                    name: "item_"+count_item+2}).appendTo("#products").wrap($("<div/>"));
+                    name: count_item}).appendTo("#products").wrap($("<div/>"));
                     count_item += 1;
                     console.log(count_item)
                 });

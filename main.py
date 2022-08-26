@@ -26,15 +26,19 @@ def get_db_connection():
 
 @app.route('/',methods=['POST','GET'])
 def signup():
+
     # if user is currently logged in
     if request.method=='POST':
         session.clear()
         conn = get_db_connection()
+        #instead of just request.form
+        #request.form.get[x, False] removes the assumption that it will always be part of the request
+        #also use () instead of [] because .get is a method
+        email = request.form.get("email", False)
+        firstName = request.form.get("firstName", False)
+        lastName = request.form.get("lastName", False)
+        passwrd = request.form.get("password", False)
 
-        email = request.form["email"]
-        firstName = request.form["firstName"] 
-        lastName = request.form["lastName"]
-        passwrd = request.form["password"]
 
         if not email:
             return("Please enter an email")
@@ -56,6 +60,7 @@ def signup():
             conn.execute("INSERT INTO students (firstName,lastName,email,passwrd) VALUES(?,?,?,?)",(firstName,lastName,email,passwrd.hexdigest()))
             conn.commit()
             conn.close()
+
         except sqlite3.IntegrityError:
             return("Email already in the system")
         
@@ -64,17 +69,39 @@ def signup():
         session["firstName"] = firstName
         session["lastName"] = lastName
         
-        return "add teachers here - success!"
+        print("email before render" + email)
+        return render_template("addTeachers.html")
 
     return render_template("signup.html")
 
 @app.route('/addTeachers', methods=['POST','GET'])
 def addTeachers():
+    print("add teachers working")
     if request.method=='POST':
         print("getting data")
+
+        conn = get_db_connection()
         im_dict = request.form
-        #multi dictionary when multi field form?
-        return(f'<h1>{im_dict}</h1>')
+        print(im_dict)
+        #multi dictionary when multi field form
+        #so using im_dict[i] will not work
+        for i in range(len(im_dict)):
+            if i%2 == 0:
+                print(i)
+                teacherName = im_dict[str(i)]
+                teacherEmail = im_dict[str(i+1)]
+                conn.execute("INSERT INTO teachers (teacherEmail,teacherName) VALUES(?,?)",(teacherEmail,teacherName))
+
+                session["email"] = "su@subridgman.com"
+                try:
+                    studentEmail = session["email"]
+                    conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES(?,?)",(studentEmail,teacherEmail))
+                    conn.commit()
+                except:
+                   return("please log in")
+        conn.close()
+                
+        return render_template("home.html")
 
     return render_template("addTeachers.html")
 
@@ -86,8 +113,8 @@ def login():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        email = request.form["email"]
-        passwrd = hashlib.md5(request.form["password"].encode())
+        email = request.form.get("email", False)
+        passwrd = hashlib.md5(request.form.get("password").encode())
 
         if not email:
             return("please enter an email")
@@ -134,8 +161,8 @@ def recorder():
     return render_template("recorder.html")
 
 
-@app.route("/threshold", methods=['GET','POST'])
-def threshold():
+@app.route("/threshold1", methods=['GET','POST'])
+def threshold1():
     if request.method == 'POST':
         try:
             #cannot use request.get_json()
@@ -144,7 +171,20 @@ def threshold():
         except ValueError:
             return "Error" 
     else:
-        return render_template("threshold.html")
+        return render_template("thresholdtest.html")
+
+
+@app.route("/threshold2", methods=['GET','POST'])
+def threshold2():
+    if request.method == 'POST':
+        try:
+            #cannot use request.get_json()
+            data = json.loads(request.data)
+            return data
+        except ValueError:
+            return "Error" 
+    else:
+        return render_template("threshold2.html")
 
 @app.route("/userprofile",methods=['POST','GET'])
 def userprofile():

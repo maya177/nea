@@ -82,6 +82,39 @@
     margin-left: -3px;
   }
   
+
+  .freq {
+    width: 300px;
+    height: 3px;
+    background-color: rgb(224, 224, 224);
+    border-radius: 5px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .freq-indicator {
+    width: 100%;
+    background-color: rgb(68, 3, 47);
+    height: 100%;
+  }
+  
+  .freq-toggler {
+    position: absolute;
+    top: 0;
+    margin-top: -4px;
+    width: 100%;
+  }
+  
+  .freq-toggler::-webkit-slider-thumb {
+    border: 1px solid rgb(224, 224, 224);
+    background: white;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    cursor: pointer;
+    margin-left: -3px;
+  }
+  
   .btn {
     border: none;
     padding: 10px;
