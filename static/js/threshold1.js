@@ -1,164 +1,258 @@
+//have hardcoded btns because for some reason loops aren't working, neither are .getelementbyclassname it won't let me disable multiple at once
 
-const durationIndicator = document.querySelector('.audio-duration-indicator');
-const volumeIndicator = document.querySelector('.volume-indicator');
+const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-const audio = document.getElementById('audio1');
+const audio1 = document.getElementById('audio1');
 const audio2 = document.getElementById('audio2');
 const audio3 = document.getElementById('audio3');
 const audio4 = document.getElementById('audio4');
 const audio5 = document.getElementById('audio5');
 
-const durationToggler = document.getElementById('duration-toggler1');
+//const audioContext = new AudioContext();
+//const source = audioContext.createMediaElementSource(audio1);
+////source.connect(audioContext.destination);
+
+
+const durationToggler1 = document.getElementById('duration-toggler1');
 const durationToggler2 = document.getElementById('duration-toggler2');
 const durationToggler3 = document.getElementById('duration-toggler3');
 const durationToggler4 = document.getElementById('duration-toggler4');
 const durationToggler5 = document.getElementById('duration-toggler5');
 
-const playBtn = document.getElementById('play-btn1');
+const plays = document.getElementsByClassName("btn btn-play")
+const playBtn1 = document.getElementById('play-btn1');
 const playBtn2 = document.getElementById('play-btn2');
 const playBtn3 = document.getElementById('play-btn3');
 const playBtn4 = document.getElementById('play-btn4');
 const playBtn5 = document.getElementById('play-btn5');
 
-const pauseBtn = document.getElementById('pause-btn1');
+const pauseBtn1 = document.getElementById('pause-btn1');
 const pauseBtn2 = document.getElementById('pause-btn2');
 const pauseBtn3 = document.getElementById('pause-btn3');
 const pauseBtn4 = document.getElementById('pause-btn4');
 const pauseBtn5 = document.getElementById('pause-btn5');
 
-const submitBtn = document.getElementById('submit1');
+const submitBtn1 = document.getElementById('submit1');
 const submitBtn2 = document.getElementById('submit2');
 const submitBtn3 = document.getElementById('submit3');
 const submitBtn4 = document.getElementById('submit4');
 const submitBtn5 = document.getElementById('submit5');
 
-
 let duration;
-const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+var audios = document.getElementsByClassName("audio");
 
 
-//use for loop
-//for (var i = 0; i < elements.length; i++) {
- //   audio[i].addEventListener('loadedmetadata', () => {
- //   duration[i] = audio[i].duration;
- // })
-//}
+
+//const analyzer = Meyda.createMeydaAnalyzer({
+//  audioContext: audioContext,
+//  source: source,
+//  bufferSize: 512,
+//  featureExtractors: ["rms"],
+//  callback: (features) => {
+//    console.log(features);
+//  },
+//});
 
 
-audio.addEventListener('loadedmetadata', () => {
-    duration = audio.duration;
-  })
+playBtn1.onclick = () => {
+  audioContext.resume();
+
+  playBtn1.disabled = true;
+  playBtn2.disabled = true;
+  playBtn3.disabled = true;
+  playBtn4.disabled = true;
+  playBtn5.disabled = true;
+
+  pauseBtn1.disabled = false;
+  audio1.play();
+  audio1.loop = true;
+}
+pauseBtn1.onclick = () => {
   
-  const setCurrentTime = (currentTime) => {
-    audio.currentTime = currentTime;
-  }
-  
-  const getAudioProgress = (currentTime) => {
-    const progress = currentTime / duration * 100
-    durationIndicator.style.width = progress + '%';
-    durationToggler.value = progress;
-    return progress;
-  }
-  
-  audio.addEventListener('timeupdate', (e) => {
-    const currentTime = e.target.currentTime;
-    getAudioProgress(currentTime);
+  playBtn1.disabled = false;
+  playBtn2.disabled = false;
+  playBtn3.disabled = false;
+  playBtn4.disabled = false;
+  playBtn5.disabled = false;
+
+  pauseBtn1.disabled = true;
+
+  audio1.pause();
+}
+
+playBtn2.onclick = () => {
+  getAudioContext().resume();
+
+  playBtn1.disabled = true;
+  playBtn2.disabled = true;
+  playBtn3.disabled = true;
+  playBtn4.disabled = true;
+  playBtn5.disabled = true;
+
+  pauseBtn2.disabled = false;
+  audio2.play();
+  audio2.loop = true;
+}
+pauseBtn2.onclick = () => {
+  getAudioContext().resume();
+
+  playBtn1.disabled = false;
+  playBtn2.disabled = false;
+  playBtn3.disabled = false;
+  playBtn4.disabled = false;
+  playBtn5.disabled = false;
+
+  pauseBtn2.disabled = true;
+
+  audio2.pause();
+}
+
+playBtn3.onclick = () => {
+  getAudioContext().resume();
+
+  playBtn1.disabled = true;
+  playBtn2.disabled = true;
+  playBtn3.disabled = true;
+  playBtn4.disabled = true;
+  playBtn5.disabled = true;
+
+  pauseBtn3.disabled = false;
+  audio3.play();
+  audio3.loop = true;
+}
+pauseBtn3.onclick = () => {
+  playBtn1.disabled = false;
+  playBtn2.disabled = false;
+  playBtn3.disabled = false;
+  playBtn4.disabled = false;
+  playBtn5.disabled = false;
+
+  pauseBtn3.disabled = true;
+  audio3.pause();
+}
+
+
+playBtn4.onclick = () => {
+  getAudioContext().resume();
+
+  playBtn1.disabled = true;
+  playBtn2.disabled = true;
+  playBtn3.disabled = true;
+  playBtn4.disabled = true;
+  playBtn5.disabled = true;
+
+  pauseBtn4.disabled = false;
+  audio4.play();
+  audio4.loop = true;
+}
+pauseBtn4.onclick = () => {
+  playBtn1.disabled = false;
+  playBtn2.disabled = false;
+  playBtn3.disabled = false;
+  playBtn4.disabled = false;
+  playBtn5.disabled = false;
+
+  pauseBtn4.disabled = true;
+
+  audio4.pause();
+}
+
+
+playBtn5.onclick = () => {
+  getAudioContext().resume();
+
+  playBtn1.disabled = true;
+  playBtn2.disabled = true;
+  playBtn3.disabled = true;
+  playBtn4.disabled = true;
+  playBtn5.disabled = true;
+
+  pauseBtn5.disabled = false;
+  audio5.play();
+  audio5.loop = true;
+}
+
+var submitBtns = document.querySelectorAll( "submit" );
+var audios = document.querySelectorAll( "audio" );
+
+//for ( var i = 0; i < submitBtns.length; i++){}
+
+submitBtn1.onclick = () => {
+  console.log(audio1.src);
+
+  $.ajax({
+    type: "POST",
+    url: "/threshold1",
+    data: JSON.stringify(audio1.getAttribute('src')),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function(response) {
+      localStorage.setItem('src', audio1.getAttribute('src'));
+      window.location.href = "/threshold2";
+    }
   });
-  
-  playBtn.onclick = () => {
-      console.log("play btn")
-      playBtn.disabled = true;
-      pauseBtn.disabled = false;
-      audio.play();
-  }
-  
-  pauseBtn.onclick = () => {
-    pauseBtn.disabled = true;
-    playBtn.disabled = false;
-    audio.pause();
-  }
-  
-  muteBtn.onclick = () => {
-    if (audio.muted) {
-      audio.muted = false;
-      muteBtn.innerText = 'Mute';
-    } else {
-      audio.muted = true;
-      muteBtn.innerText = 'Unmute';
+}
+
+submitBtn2.onclick = () => {
+  console.log(audio2.src);
+
+  $.ajax({
+    type: "POST",
+    url: "/threshold1",
+    data: JSON.stringify(audio2.getAttribute('src')),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function(response) {
+      localStorage.setItem('src', audio2.getAttribute('src'));
+      window.location.href = "/threshold2";
     }
-  }
-  
-  submitBtn.onclick = () => {
-      pass_to_python = audio.volume
-      console.log(pass_to_python)
-  
-      /*$.ajax({
-          url:'/threshold',
-          type: 'POST',
-          data: JSON.stringify(pass_to_python)
-        });
-  */
-  }
-  
-  durationToggler.addEventListener('input', (e) => {
-    const progress = parseInt(e.target.value);
-    const time = progress / 100 * duration;
-    setCurrentTime(time);
-    getAudioProgress(time, duration);
-  })
-  
-  volumeToggler.addEventListener('input', (e) => {
-    const value = e.target.value;
-    const volume = value / 100;
-    audio.volume = volume;
-    volumeIndicator.style.width = value + '%';
-  })
-  
-  freqToggler.addEventListener('input', (e) => {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  
-    const value = e.target.value;
-    console.log(value)
-    audio.webiktPreservesPitch = false;
-    
-    //cannot use const in if statements
-    if (value < 50){
-      var pitch = (value/100)/1.5;
-    } else if (value > 50){
-      var pitch = 1.5*(1 + value/100);
-    } else if (value < 10){
-      var pitch = 1.5*(1 + value/100);
+  });
+}
+submitBtn3.onclick = () => {
+  console.log(audio3.src);
+
+  $.ajax({
+    type: "POST",
+    url: "/threshold1",
+    data: JSON.stringify(audio3.getAttribute('src')),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function(response) {
+      localStorage.setItem('src', audio3.getAttribute('src'));
+      window.location.href = "/threshold2";
     }
-  
-    //const semitones = value / 100;
-    //var semitoneRatio = Math.pow(2, 1/12);
-    //audio.playbackRate = Math.pow(semitoneRatio, semitones);
-    audio.playbackRate = pitch;
-    //audio.detune.value = pitch*100;
-    audio.loop = true;
-    volumeIndicator.style.width = value + '';
-  })
-  //would need to use diff API to loop 
-  //add in diagram showing bar and -50% and +50% scaled to -100% and +100%
-  
-  //https://www.oreilly.com/library/view/web-audio-api/9781449332679/ch04.html
-  //https://stackoverflow.com/questions/31274895/changing-speed-of-audio-using-the-web-audio-api-without-changing-pitch
-  //https://stackoverflow.com/questions/25157513/javascript-pitch-shift-with-time-stretch
-  
-  const v = e.tar.get.value;
-    console.log(value)
-    const pitch = value / 100;
-    console.log(pitch)
-    audio.mozPreservesPitch = false;
-    audio.playbackRate = pitch;
-  
-  
-    volumeIndicator.style.width = pitch + '%';
-  
-  //
-  //const source = context.createBufferSource();
-  //source.buffer = sample;
-  //source.playbackRate.value = rate;
-  //source.connect(context.destination);
-  //source.start(0);
-  ///
+  });
+}
+submitBtn4.onclick = () => {
+  console.log(audio4.src);
+
+  $.ajax({
+    type: "POST",
+    url: "/threshold1",
+    data: JSON.stringify(audio4.getAttribute('src')),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function(response) {
+      localStorage.setItem('src', audio4.getAttribute('src'));
+      window.location.href = "/threshold2";
+    }
+  });
+}
+//can take out ajax because src carried to threshold2 and all submitted there
+submitBtn5.onclick = () => {
+  console.log(audio5.src);
+
+  $.ajax({
+    type: "POST",
+    url: "/threshold1",
+    data: JSON.stringify(audio5.getAttribute('src')),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function(response) {
+      localStorage.setItem('src', audio5.getAttribute('src'));
+      window.location.href = "/threshold2";
+    }
+  });
+}
+//wasn't working because local storage data was json stringified

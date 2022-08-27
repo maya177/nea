@@ -4,7 +4,10 @@
 <link rel="stylesheet" type="text/css" href="./static/css/threshold2.css">
 
 <!--had to put audio in static file to be able to access it, converted all files into .mp3 for consistency</audio>-->
-<audio id='audio' src='./static/audio/rock.mp3'></audio>
+<!--ng-src="{{data}}"-->
+<audio id="audio">
+  <source src="" type="audio/mp3">
+</audio>
 
 <div class="audio-duration">
   <div class="audio-duration-indicator"> 
@@ -30,3 +33,4 @@
 <button class="submit" id = "submit">Submit</button>
 
 <script src="/static/js/threshold2.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

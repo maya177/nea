@@ -1,9 +1,10 @@
-need to send teachers to db
-
 work on database attribute diagram
-
-then work on threshold
 
 look at ajax for moving between languages
 
 write up ab using dynamic forms n multi dictionaries bc it was so difficult
+
+use ajax to get thresholds out of sounds and submit to flask
+then compare, then do final page
+
+work out why signup page return render_template is redoing validation

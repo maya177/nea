@@ -15,6 +15,7 @@ const durationToggler3 = document.getElementById('duration-toggler3');
 const durationToggler4 = document.getElementById('duration-toggler4');
 const durationToggler5 = document.getElementById('duration-toggler5');
 
+const plays = document.getElementsByClassName("btn btn-play")
 const playBtn1 = document.getElementById('play-btn1');
 const playBtn2 = document.getElementById('play-btn2');
 const playBtn3 = document.getElementById('play-btn3');
@@ -36,38 +37,64 @@ const submitBtn5 = document.getElementById('submit5');
 let duration;
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-audio1.addEventListener('loadedmetadata', () => {
-  duration1 = audio1.duration;
-})
+var audios = document.getElementsByClassName("audio");
 
-const setCurrentTime = (currentTime) => {
-  audio1.currentTime = currentTime;
-}
+//audio1.addEventListener('loadedmetadata', () => {
+ // duration1 = audio1.duration;
 
-const getAudioProgress = (currentTime) => {
-  const progress1 = currentTime / duration * 100
-  durationIndicator.style.width = progress1 + '%';
-  durationToggler1.value = progress1;
-  return progress1;
-}
+//})
 
-audio1.addEventListener('timeupdate', (e) => {
-  const currentTime = e.target.currentTime;
-  getAudioProgress(currentTime);
-});
+//var playbtns = document.getElementsByClassName("btn btn-play");
+//var pausebtns = document.getElementsByClassName("btn btn-pause");
+
+//for (var i = 0; i < playbtns.length; i++) {
+ //   playbtns[i].onclick = () => {
+  //      for (var x = 0; x < playbtns.length; x++) {
+   //         if (x != i){
+    //            playbtns[x].disabled = true;
+     //       }
+     //   pausebtns[i].disabled = false;
+      //  audios[i].play();
+//}}}
+
+//for (var i = 0; i < playbtns.length; i++) {
+//    playbtns[i].onclick = () => {
+ //      audios[i].play()
+  //     console.log(i)
+   //    playbtns[0].disable = true;
+      // pausebtns[i].disable = false;
+
+//var buttons = document.getElementsByTagName('play');
+//for (var i = 0, len = buttons.length; i < len; i++) {
+ //   buttons[i].onclick = function (){
+  //      console.log(i);
+   // }
+//}
 
 playBtn1.onclick = () => {
-    console.log("play btn")
-    playBtn1.disabled = true;
+    //document.getElementbyClass("btn btn-play").disabled = true;
+    //var plays = document.getElementsByClassName('btn btn-play');
+    //console.log();
+   // plays.setAttribute("disabled","true");
+   
+    plays.disabled = true;
     pauseBtn1.disabled = false;
     audio1.play();
-}
+  }
 
-pauseBtn1.onclick = () => {
-  pauseBtn1.disabled = true;
-  playBtn1.disabled = false;
-  audio1.pause();
-}
+for (var i = 0; i < pausebtns.length; i++) {
+    pausebtns[i].onclick = () => {
+        console.log("pause btn")
+        pausebtns.disabled = true;
+        playbtns[i].disabled = false;
+        audios[i].play();
+}}
+
+//pauseBtn1.onclick = () => {
+ // pauseBtn1.disabled = true;
+  //playBtn1.disabled = false;
+  //audio1.pause();
+//}
 
 
 submitBtn.onclick = () => {

@@ -90,8 +90,41 @@ function stopRecording() {
     gumStream.getAudioTracks()[0].stop();
 
     //create the wav blob and pass it on to createDownloadLink
+    console.log("exporting data")
+    rec.exportWAV(sendData);
+}
 
-    rec.exportWAV(createDownloadLink)
+function sendData(blob) {
+    fetch("/recorder", {
+    method: "POST",
+    body: blob,
+    success: function(response) {
+        console.log("success")
+        window.location.href = "/home";
+      }    }).then(response => response.json()
+      ).then(json => {
+          console.log(json)
+          location.href = '/compare';
+      });
+}
+
+
+
+
+
+function send(blob){
+    var fd = new FormData();
+    fd.append('data', soundBlob);
+
+    $.ajax({
+        type: "POST",
+        url: "/recorder",
+        data: fd,
+        contentType: false,
+        success: function(response) {
+        window.location.href = "/home";
+        }
+    });
 }
 
 function createDownloadLink(blob) {

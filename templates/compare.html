@@ -1,0 +1,17 @@
+<ul>
+    <li>{{zcrs}}</li>
+    <li>{{cent}}</li>
+    <li>{{mel}}</li>
+    <li>{{loudness}}</li>
+    </ul>
+
+
+<form action="" method="POST">
+<select name="teacher">
+{% for item in teachers %}
+<option value="{{ item.teacherName }}">{{ item.teacherName }}</option>
+{% endfor %}
+</select>
+<button type="submit">submit</button>
+</form>
+    

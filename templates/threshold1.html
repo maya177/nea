@@ -1,61 +1,58 @@
-<link rel="stylesheet" type="text/css" href="./static/css/threshold1.css">
+<!--the audio element is a DOM element used for embedding sounds from different sources in a webpage-->
+<!--<audio> is only used for loading and playing souds-->
 
-<audio class = 'audio' id='audio1' src='.static/audio/buzz.mp3'></audio>
-<div class="audio-duration">
-    <div class="audio-duration-indicator">
-    </div>
-    <input class="audio-duration-toggler" id="duration-toggler1" type="range" value="0" />
+  <link rel="stylesheet" type="text/css" href="./static/css/threshold2.css">
 
-    <button class="btn btn-play" id="play-btn1">Play</button>
-    <button disabled class="btn btn-pause" id="pause-btn1">Pause</button>
-    <button class="submit" id = "submit1">Submit</button>
+  <!--had to put audio in static file to be able to access it, converted all files into .mp3 for consistency</audio>-->
+  <audio class='audio' id='audio1' src='./static/audio/buzz.mp3'></audio>
+  <div class="audio-duration">
+    <div class="audio-duration-indicator"> 
+    </div>      
+      <button enabled type="play" name = "btn btn-play" class="btn btn-play" id="play-btn1">Play</button>
+      <button disabled class="btn btn-pause1" id="pause-btn1">Pause</button>
+      <button class="submit" id = "submit1">Submit</button>
   </div>
 
-<audio class = 'audio' id='audio2' src='./audio/crowd.wav'></audio>
-<div class="audio-duration">
-    <div class="audio-duration-indicator">
+
+  <audio class='audio' id='audio2' src='./static/audio/crowd.mp3'></audio>
+  <div class="audio-duration">
+      <div class="audio-duration-indicator"> 
+      </div>        
+        <button enabled type="play" class="btn btn-play" id="play-btn2">Play</button>
+        <button disabled class="btn btn-pause" id="pause-btn2">Pause</button>
+        <button class="submit" id = "submit2">Submit</button>
     </div>
-    <input class="audio-duration-toggler" id="duration-toggler2" type="range" value="0" />
 
-    <button class="btn btn-play" id="play-btn2">Play</button>
-    <button disabled class="btn btn-pause" id="pause-btn2">Pause</button>
-    <button class="submit" id = "submit2">Submit</button>
-  </div>
 
-<audio class = 'audio'  id='audio3' src='./audio/classroom.wav'></audio>
-<div class="audio-duration">
-    <div class="audio-duration-indicator">
+  <audio class='audio' id='audio3' src='./static/audio/classroom.mp3'></audio>
+  <div class="audio-duration">
+      <div class="audio-duration-indicator"> 
+      </div>        
+        <button enabled type = "play" class="btn btn-play" id="play-btn3">Play</button>
+        <button disabled class="btn btn-pause" id="pause-btn3">Pause</button>
+        <button class="submit" id = "submit3">Submit</button>
     </div>
-    <input class="audio-duration-toggler" id="duration-toggler3" type="range" value="0" />
 
-    <button class="btn btn-play" id="play-btn3">Play</button>
-    <button disabled class="btn btn-pause" id="pause-btn3">Pause</button>
-    <button class="submit" id = "submit3">Submit</button>
-  </div>
 
-<audio class = 'audio' id='audio4' src='./audio/laughing.wav'></audio>
-<div class="audio-duration">
-    <div class="audio-duration-indicator">
+  <audio class='audio' id='audio4' src='./static/audio/laughing.mp3'></audio>
+  <div class="audio-duration">
+      <div class="audio-duration-indicator"> 
+      </div>        
+        <button enabled type="play" class="btn btn-play" id="play-btn4">Play</button>
+        <button disabled class="btn btn-pause" id="pause-btn4">Pause</button>
+        <button class="submit" id = "submit4">Submit</button>
     </div>
-    <input class="audio-duration-toggler" id="duration-toggler4" type="range" value="0" />
 
-    <button class="btn btn-play" id="play-btn4">Play</button>
-    <button disabled class="btn btn-pause" id="pause-btn4">Pause</button>
-    <button class="submit" id = "submit4">Submit</button>
-  </div>
 
-<audio class = 'audio' id='audio5' src='./audio/rock.wav'></audio>
-<div class="audio-duration">
-    <div class="audio-duration-indicator">
+  <audio class='audio' id='audio5' src='./static/audio/rock.mp3'></audio>
+  <div class="audio-duration">
+      <div class="audio-duration-indicator"> 
+      </div>        
+        <button enabled type="play" class="btn btn-play" id="play-btn5">Play</button>
+        <button disabled class="btn btn-pause" id="pause-btn5">Pause</button>
+        <button class="submit" id = "submit5">Submit</button>
     </div>
-    <input class="audio-duration-toggler" id="duration-toggler5" type="range" value="0" />
-
-    <button class="btn btn-play" id="play-btn5">Play</button>
-    <button disabled class="btn btn-pause" id="pause-btn5">Pause</button>
-    <button class="submit" id = "submit5">Submit</button>
-  </div>
-
-  <script src="./static/js/threshold1.js"></script>
-
-<!--https://www.youtube.com/watch?v=amw_1ylyRaA-->
-<!--make image button clickable-->
+  
+  <script src="/static/js/threshold1.js"></script>
+  <script src="https://unpkg.com/meyda/dist/web/meyda.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
