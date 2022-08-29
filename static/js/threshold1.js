@@ -8,9 +8,9 @@ const audio3 = document.getElementById('audio3');
 const audio4 = document.getElementById('audio4');
 const audio5 = document.getElementById('audio5');
 
-//const audioContext = new AudioContext();
-//const source = audioContext.createMediaElementSource(audio1);
-////source.connect(audioContext.destination);
+const audioContext = new AudioContext();
+const source = audioContext.createMediaElementSource(audio1);
+source.connect(audioContext.destination);
 
 
 const durationToggler1 = document.getElementById('duration-toggler1');
@@ -82,7 +82,7 @@ pauseBtn1.onclick = () => {
 }
 
 playBtn2.onclick = () => {
-  getAudioContext().resume();
+  audioContext.resume();
 
   playBtn1.disabled = true;
   playBtn2.disabled = true;
@@ -95,7 +95,7 @@ playBtn2.onclick = () => {
   audio2.loop = true;
 }
 pauseBtn2.onclick = () => {
-  getAudioContext().resume();
+  audioContext.resume();
 
   playBtn1.disabled = false;
   playBtn2.disabled = false;
@@ -109,7 +109,7 @@ pauseBtn2.onclick = () => {
 }
 
 playBtn3.onclick = () => {
-  getAudioContext().resume();
+  audioContext.resume();
 
   playBtn1.disabled = true;
   playBtn2.disabled = true;
@@ -134,7 +134,7 @@ pauseBtn3.onclick = () => {
 
 
 playBtn4.onclick = () => {
-  getAudioContext().resume();
+  audioContext.resume();
 
   playBtn1.disabled = true;
   playBtn2.disabled = true;
@@ -160,7 +160,7 @@ pauseBtn4.onclick = () => {
 
 
 playBtn5.onclick = () => {
-  getAudioContext().resume();
+  audioContext.resume();
 
   playBtn1.disabled = true;
   playBtn2.disabled = true;

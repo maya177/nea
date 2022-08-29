@@ -1,6 +1,14 @@
 <link rel="stylesheet" type="text/css" href="./static/css/login.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+{% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         {{ message }}
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+
 <div class="bold-line"></div>
 <div class="container">
   <div class="window">
@@ -16,7 +24,19 @@
         </form>
 
       </div>
-      <div><button class='ghost-round full-width'>Create Account</button></div>
+      <div><button id = 'createAccount' class='ghost-round full-width'>Create Account</button></div>
+      <div><button id='forgotPasswrd' class='ghost-round full-width'>Forgot Password</button></div>
+
     </div>
   </div>
 </div>
+
+<script>
+  createAccount.onclick = () => {
+    window.location = "/";
+  }
+
+  forgotPasswrd.onclick = () => {
+    window.location = "/forgotPasswrd";
+  }
+</script>

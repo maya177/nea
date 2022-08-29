@@ -1,13 +1,15 @@
-<!DOCTYPE html>
-<html>
   <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="./static/css/home.css">
   </head>
+
   <body>
-    <a class='btn btn-dark', id = "recorder", href="{{ url_for('recorder') }}">Recorder</a>
-    <a class='btn btn-dark', id = "user profile", href="{{ url_for('userprofile') }}">User Profile</a>
-    <a class='btn btn-dark', id = "threshold calculator", href="{{ url_for('threshold1') }}">Threshold Calculator</a>
-    <a class='btn btn-dark', id = "log out", href="{{ url_for('logout') }}">Log Out</a>
+    <div class="content">
+
+    <a class='btn', id = "recorder", href="{{ url_for('recorder') }}">Recorder</a>
+    <a class='btn', id = "user profile", href="{{ url_for('userprofile') }}">User Profile</a>
+    <a class='btn', id = "threshold calculator", href="{{ url_for('threshold1') }}">Threshold Calculator</a>
+    <a class='btn', id = "log out", href="{{ url_for('logout') }}">Log Out</a>
+    </div>
   </body>
-</html>
 

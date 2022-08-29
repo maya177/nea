@@ -3,6 +3,15 @@
 
   <link rel="stylesheet" type="text/css" href="./static/css/threshold2.css">
 
+  
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+   {% for message in messages %}
+      {{ message }}
+   {% endfor %}
+{% endif %}
+{% endwith %}
+
   <!--had to put audio in static file to be able to access it, converted all files into .mp3 for consistency</audio>-->
   <audio class='audio' id='audio1' src='./static/audio/buzz.mp3'></audio>
   <div class="audio-duration">

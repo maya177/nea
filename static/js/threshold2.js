@@ -1,6 +1,8 @@
 //.querySelector is a method of the Element interface and returns the first element within the document that matches the selectors
 //.getElementById references HTML elements in DOM
 //const data = JSON.parse(localStorage.getItem('src'));
+
+//playback rate range is x0.25 to x4
 const data = localStorage.getItem('src');
 var audio = document.getElementById('audio');
 audio.src=data;
@@ -78,11 +80,12 @@ freqToggler.addEventListener('input', (e) => {
   
   //cannot use const in if statements
   if (value < 50){
-    var pitch = (value/100)/1.5;
+    var pitch = ((value*2)/100);
   } else if (value > 50){
-    var pitch = 1.5*(1 + value/100);
-  } else if (value < 10){
-    var pitch = 1.5*(1 + value/100);
+    var pitch = 1 + ((value/2)/100);
+  }
+    else if (value < 30){
+    var pitch = 0.6
   }
 
   //const semitones = value / 100;

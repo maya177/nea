@@ -1,117 +1,158 @@
 //.querySelector is a method of the Element interface and returns the first element within the document that matches the selectors
 //.getElementById references HTML elements in DOM
+//const data = JSON.parse(localStorage.getItem('src'));
+
+//playback rate range is x0.25 to x4
+const data = localStorage.getItem('src');
+var audio = document.getElementById('audio');
+audio.src=data;
+audio.load();
+
 const durationIndicator = document.querySelector('.audio-duration-indicator');
+const volumeIndicator = document.querySelector('.volume-indicator');
+const freqIndicator = document.querySelector('.freq-indicator');
 
-const audio1 = document.getElementById('audio1');
-const audio2 = document.getElementById('audio2');
-const audio3 = document.getElementById('audio3');
-const audio4 = document.getElementById('audio4');
-const audio5 = document.getElementById('audio5');
+console.log("data")
+console.log(data)
+console.log(typeof(data))
 
+//not working w var but works hardcoded
+//workaround
+//var str = "<audio controls><source src=' "+$scope.data+" ' type='audio/wav'></audio>";
 
-const durationToggler1 = document.getElementById('duration-toggler1');
-const durationToggler2 = document.getElementById('duration-toggler2');
-const durationToggler3 = document.getElementById('duration-toggler3');
-const durationToggler4 = document.getElementById('duration-toggler4');
-const durationToggler5 = document.getElementById('duration-toggler5');
+//var str = "<audio id='audio' "+"./static/audiobuzz.mp3"+" '</audio>";
+//document.getElementById('audio').innerHTML = str;
+//console.log(audio.getAttribute('src'));
 
-const plays = document.getElementsByClassName("btn btn-play")
-const playBtn1 = document.getElementById('play-btn1');
-const playBtn2 = document.getElementById('play-btn2');
-const playBtn3 = document.getElementById('play-btn3');
-const playBtn4 = document.getElementById('play-btn4');
-const playBtn5 = document.getElementById('play-btn5');
+const durationToggler = document.getElementById('duration-toggler');
+const volumeToggler = document.getElementById('volume-toggler');
+const freqToggler = document.getElementById('freq-toggler');
 
-const pauseBtn1 = document.getElementById('pause-btn1');
-const pauseBtn2 = document.getElementById('pause-btn2');
-const pauseBtn3 = document.getElementById('pause-btn3');
-const pauseBtn4 = document.getElementById('pause-btn4');
-const pauseBtn5 = document.getElementById('pause-btn5');
-
-const submitBtn1 = document.getElementById('submit1');
-const submitBtn2 = document.getElementById('submit2');
-const submitBtn3 = document.getElementById('submit3');
-const submitBtn4 = document.getElementById('submit4');
-const submitBtn5 = document.getElementById('submit5');
+const playBtn = document.getElementById('play-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const muteBtn = document.getElementById('mute-btn');
+const submitBtn = document.getElementById('submit');
 
 let duration;
-const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
 
-var audios = document.getElementsByClassName("audio");
+//set up the different audio nodes we will use for the app
+const analyser = audioCtx.createAnalyser();
+const distortion = audioCtx.createWaveShaper();
+const gainNode = audioCtx.createGain();
+const biquadFilter = audioCtx.createBiquadFilter();
+const convolver = audioCtx.createConvolver();
 
-//audio1.addEventListener('loadedmetadata', () => {
- // duration1 = audio1.duration;
+// connect the nodes together
 
-//})
+source = audio.createMediaStreamSource(stream);
+source.connect(analyser);
+analyser.connect(distortion);
+distortion.connect(biquadFilter);
+biquadFilter.connect(convolver);
+convolver.connect(gainNode);
+gainNode.connect(audioCtx.destination);
 
-//var playbtns = document.getElementsByClassName("btn btn-play");
-//var pausebtns = document.getElementsByClassName("btn btn-pause");
+// Manipulate the Biquad filter
 
-//for (var i = 0; i < playbtns.length; i++) {
- //   playbtns[i].onclick = () => {
-  //      for (var x = 0; x < playbtns.length; x++) {
-   //         if (x != i){
-    //            playbtns[x].disabled = true;
-     //       }
-     //   pausebtns[i].disabled = false;
-      //  audios[i].play();
-//}}}
+audio.addEventListener('loadedmetadata', () => {
+  duration = audio.duration;
+})
 
-//for (var i = 0; i < playbtns.length; i++) {
-//    playbtns[i].onclick = () => {
- //      audios[i].play()
-  //     console.log(i)
-   //    playbtns[0].disable = true;
-      // pausebtns[i].disable = false;
-
-//var buttons = document.getElementsByTagName('play');
-//for (var i = 0, len = buttons.length; i < len; i++) {
- //   buttons[i].onclick = function (){
-  //      console.log(i);
-   // }
-//}
-
-playBtn1.onclick = () => {
-    //document.getElementbyClass("btn btn-play").disabled = true;
-    //var plays = document.getElementsByClassName('btn btn-play');
-    //console.log();
-   // plays.setAttribute("disabled","true");
-   
-    plays.disabled = true;
-    pauseBtn1.disabled = false;
-    audio1.play();
-  }
-
-for (var i = 0; i < pausebtns.length; i++) {
-    pausebtns[i].onclick = () => {
-        console.log("pause btn")
-        pausebtns.disabled = true;
-        playbtns[i].disabled = false;
-        audios[i].play();
-}}
-
-//pauseBtn1.onclick = () => {
- // pauseBtn1.disabled = true;
-  //playBtn1.disabled = false;
-  //audio1.pause();
-//}
-
-
-submitBtn.onclick = () => {
-    pass_to_python = audio.volume
-    console.log(pass_to_python)
-
-    /*$.ajax({
-        url:'/threshold',
-        type: 'POST',
-        data: JSON.stringify(pass_to_python)
-      });
-*/
+const setCurrentTime = (currentTime) => {
+  audio.currentTime = currentTime;
 }
 
-durationToggler1.addEventListener('input', (e) => {
-  const progress1 = parseInt(e.target.value);
-  const time1 = progress1 / 100 * duration;
-  setCurrentTime(time1);
-  getAudioProgress(time1, duration);
+const getAudioProgress = (currentTime) => {
+  const progress = currentTime / duration * 100
+  durationIndicator.style.width = progress + '%';
+  durationToggler.value = progress;
+  return progress;
+}
+
+audio.addEventListener('timeupdate', (e) => {
+  const currentTime = e.target.currentTime;
+  getAudioProgress(currentTime);
+});
+
+durationToggler.addEventListener('input', (e) => {
+  const progress = parseInt(e.target.value);
+  const time = progress / 100 * duration;
+  setCurrentTime(time);
+  getAudioProgress(time, duration);
 })
+
+volumeToggler.addEventListener('input', (e) => {
+  const value = e.target.value;
+  const volume = value / 100;
+  audio.volume = volume;
+  volumeIndicator.style.width = value + '%';
+})
+
+freqToggler.addEventListener('input', (e) => {
+
+  biquadFilter.type = "lowshelf";
+  biquadFilter.frequency.value = 1000;
+  biquadFilter.gain.value = 25;
+
+  const value = e.target.value;
+  console.log(value)
+  audio.webiktPreservesPitch = false;
+  
+
+  biquadFilter.frequency.setTargetAtTime(1000, audioCtx.currentTime, 0)
+
+
+  //const semitones = value / 100;
+  //var semitoneRatio = Math.pow(2, 1/12);
+  //audio.playbackRate = Math.pow(semitoneRatio, semitones);
+  
+  //audio.playbackRate = pitch;
+  
+  //audio.detune.value = pitch*100;
+  audio.loop = true;
+  volumeIndicator.style.width = value + '';
+})
+
+
+playBtn.onclick = () => {
+  console.log("play btn")
+  playBtn.disabled = true;
+  pauseBtn.disabled = false;
+  audio.play();
+}
+
+pauseBtn.onclick = () => {
+pauseBtn.disabled = true;
+playBtn.disabled = false;
+audio.pause();
+}
+
+muteBtn.onclick = () => {
+if (audio.muted) {
+  audio.muted = false;
+  muteBtn.innerText = 'Mute';
+} else {
+  audio.muted = true;
+  muteBtn.innerText = 'Unmute';
+}
+}
+
+submitBtn.onclick = () => {
+  console.log(audio.volume)
+  console.log(audio.playbackRate)
+
+  let data = {'src': audio.getAttribute('src'), 'volume': audio.volume, 'pitch': audio.playbackRate};
+  $.ajax({
+    type: "POST",
+    url: "/threshold2",
+    data: JSON.stringify(data),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function(response) {
+      window.location.href = "/home";
+    }
+  });
+
+}
+

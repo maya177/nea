@@ -1,10 +1,5 @@
 work on database attribute diagram
 
-look at ajax for moving between languages
+scale values and get recent thresholds then compare in /compa
 
-write up ab using dynamic forms n multi dictionaries bc it was so difficult
-
-use ajax to get thresholds out of sounds and submit to flask
-then compare, then do final page
-
-work out why signup page return render_template is redoing validation
+if page only accessible thro home page which is onyl accessible if logged in, is session handling required?
