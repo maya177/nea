@@ -1,33 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Dynamic Form Example</title>
-        <script
-                src="https://code.jquery.com/jquery-1.12.4.min.js"
-                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-                crossorigin="anonymous"></script>
-    </head>
-    <body>
-        Products:
-        <form action="" method="post">
-            <div id="products"></div>
-            <button id="add_item" type="button">Add item</button>
-            <input type="submit" value="Submit">
-        </form>
-        <script>
-            $(document).ready(function(){
-                var count_item = 0;
-                $("#add_item").on("click", function(){
-                    $("<input/>").attr({ type: "text", placeholder: "Enter teacher name",
-                        name: count_item}).appendTo("#products").wrap($("<div/>"));
-                    count_item += 1;
-                    $("<input/>").attr({ type: "text", placeholder: "Enter teacher email",
-                    name: count_item}).appendTo("#products").wrap($("<div/>"));
-                    count_item += 1;
-                    console.log(count_item)
-                });
-            })
-        </script>
-    </body>
-</html>
+<head>
+    <link rel="stylesheet" type="text/css" href="./static/css/addTeachers.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+<div class="form-group dynamic-element" style="display:none">
+    <div class="row">
+    <div class="col-md-2"></div>
+      
+    <!-- Replace these fields -->
+    <div class="col-md-4">
+      <input id="teacherName" name="teacherName" class="form-control" type="text" placeholder="add a teacher's name">
+    </div>
+
+    <div class="col-md-3">
+        <input id="teacherEmail" name="teacherEmail" class="form-control" type="email" placeholder="add a teacher's email">
+    </div>
+
+      <!-- End of fields-->
+      <div class="col-md-1">
+        <p class="delete">x</p>
+      </div>
+    </div>
+  </div>
+  <!-- END OF HIDDEN ELEMENT -->
+  
+  
+  
+  
+  
+  <div class="form-container">
+    <form class="form-horizontal" action="" method="post">
+    <fieldset>
+    <!-- Form Name -->
+    <legend class="title">Add Teachers</legend>
+  
+    <div class="dynamic-stuff">
+      <!-- Dynamic element will be cloned here -->
+      <!-- You can call clone function once if you want it to show it a first element-->
+    </div>
+    
+    <!-- Button -->
+    <div class="form-group">
+      <div class="row">
+        <div class="col-md-12">
+            <p class="add-one">+ Add a teacher</p>
+        </div>
+      <div class="col-md-5"></div>
+        <div class="col-md-6">
+          <input type="submit" class="btn btn-primary">
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  </form>
+  </div>
+
+  <script>//Clone the hidden element and shows it
+    $('.add-one').click(function(){
+      $('.dynamic-element').first().clone().appendTo('.dynamic-stuff').show();
+      attach_delete();
+    });
+    
+    
+    //Attach functionality to delete buttons
+    function attach_delete(){
+      $('.delete').off();
+      $('.delete').click(function(){
+        console.log("click");
+        $(this).closest('.form-group').remove();
+      });
+    }</script>

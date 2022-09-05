@@ -1,15 +1,24 @@
   <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
     <link rel="stylesheet" type="text/css" href="./static/css/home.css">
+   
+    <div class="heading"> 
+      <header class="display-1">Dashboard</header>
+      <small class="text-muted">record thresholds, audio, and see your user profile</small>
+    </div>
+   
   </head>
 
   <body>
     <div class="content">
 
-    <a class='btn', id = "recorder", href="{{ url_for('recorder') }}">Recorder</a>
-    <a class='btn', id = "user profile", href="{{ url_for('userprofile') }}">User Profile</a>
-    <a class='btn', id = "threshold calculator", href="{{ url_for('threshold1') }}">Threshold Calculator</a>
-    <a class='btn', id = "log out", href="{{ url_for('logout') }}">Log Out</a>
+    <a class='btn btn-lg button', id = "recorder", href="{{ url_for('recorder') }}">Recorder</a>
+    <a class='btn btn-lg button', id = "user profile", href="{{ url_for('userprofile') }}">User Profile</a>
+    <a class='btn btn-lg button', id = "threshold calculator", href="{{ url_for('threshold1') }}">Threshold Calculator</a>
     </div>
+
+    <a class='btn btn-secondary btn-lg logout', href="{{ url_for('logout') }}">Logout</a>
+
+
   </body>
 

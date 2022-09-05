@@ -173,6 +173,18 @@ playBtn5.onclick = () => {
   audio5.loop = true;
 }
 
+pauseBtn5.onclick = () => {
+  playBtn1.disabled = false;
+  playBtn2.disabled = false;
+  playBtn3.disabled = false;
+  playBtn4.disabled = false;
+  playBtn5.disabled = false;
+
+  pauseBtn5.disabled = false;
+
+  audio4.pause();
+}
+
 var submitBtns = document.querySelectorAll( "submit" );
 var audios = document.querySelectorAll( "audio" );
 

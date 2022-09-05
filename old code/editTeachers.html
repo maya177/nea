@@ -1,0 +1,60 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+
+<style>
+	.hidden{
+        display:none;
+    }
+
+    .result{
+    	max-width:80px; 
+    }
+
+</style>
+
+<div class="row">
+
+	<div class="col-md-4"></div>
+
+	<div class="col-md-4">
+
+		<div class="card card-body">
+
+			<!-- Form Wrapper & Button -->
+			<button class="btn btn-sm btn-primary" id="add-test">Add Test</button>
+			<div class="form-wrapper hidden">
+				<select class="form-control" id="test-name">
+					<option>----------</option>
+					<option>Flash Point</option>
+					<option>Water</option>
+					<option>Distillation</option>
+				</select>
+				<input class="form-control" type="text" id="test-result">
+				<button class="btn btn-sm btn-info" id="create-test">Add</button>
+			</div>
+
+			<!-- Data Table -->
+			<table class="table table-dark">
+			  <thead>
+			    <tr>
+			      <th scope="col">Test</th>
+			      <th scope="col">Result</th>
+
+			    </tr>
+			  </thead>
+			  <tbody id="tests-table">
+			    
+			  </tbody>
+			</table>
+
+		</div>
+
+	</div>
+
+	<div class="col-md-4"></div>
+</div>
+
+<!--for some reason script only works if after code-->
+<script src="/static/js/editTeachers.js"></script>

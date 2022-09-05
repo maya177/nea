@@ -2,7 +2,10 @@
 <!--<audio> is only used for loading and playing souds-->
 
 <link rel="stylesheet" type="text/css" href="./static/css/threshold2.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
 {% with messages = get_flashed_messages() %}
    {% if messages %}
@@ -18,28 +21,29 @@
   <source src="" type="audio/mp3">
 </audio>
 
-<div class="audio-duration">
-  <div class="audio-duration-indicator"> 
+<div class="content">
+  <div class="audio-duration">
+    <div class="audio-duration-indicator"> 
+    </div>
+    <input class="audio-duration-toggler" id="duration-toggler" type="range" value="0" />
   </div>
-  <input class="audio-duration-toggler" id="duration-toggler" type="range" value="0" />
-</div>
 
-<div class="volume">
-  <div class="volume-indicator"></div>
-  <input class="volume-toggler" id='volume-toggler' type="range" value="100" />
-</div>
-
-
-<div class="freq">
-    <div class="freq-indicator"></div>
-    <input class="freq-toggler" id='freq-toggler' type="range" value="50" />
+  <div class="volume">
+    <div class="volume-indicator"></div>
+    <input class="volume-toggler" id='volume-toggler' type="range" value="100" />
   </div>
 
 
-<button class="btn btn-play" id="play-btn">Play</button>
-<button disabled class="btn btn-pause" id="pause-btn">Pause</button>
-<button class="btn btn-mute" id="mute-btn">Mute</button>
-<button class="submit" id = "submit">Submit</button>
+  <div class="freq">
+      <div class="freq-indicator"></div>
+      <input class="freq-toggler" id='freq-toggler' type="range" value="50" />
+    </div>
 
+
+    <button class="btn btn-play btn-outline-success btn-lg" id="play-btn">Play</button>
+    <button disabled class="btn btn-pause btn-outline-warning btn-lg" id="pause-btn">Pause</button>
+    <button class="btn btn-mute btn-outline-dark btn-lg" id="mute-btn">Mute</button>
+    <button class="submit btn-primary btn-lg" id = "submit">Submit</button>
+  </div>
 <script src="/static/js/threshold2.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

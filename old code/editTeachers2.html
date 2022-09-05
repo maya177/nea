@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+<style>
+	.hidden{
+        display:none;
+    }
+
+    .result{
+    	max-width:80px; 
+    }
+
+</style>
+
+<body>
+    <div class="container"><p><h1 align="center">Python Flask add edit delete Datatable Row Using Jquery Ajax and mysqldb database</h1></p>
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-8"><h2>Student <b>Details</b></h2></div>
+                    <div class="col-sm-4">
+                        <button type="button" class="btn btn-info add-new"><i class="fa fa-plus"></i> Add New</button>
+                    </div>
+                    <div class='btn btn-info' id="displaymessage" style="display:none;width:100%;margin-top:10px;"></div>
+                </div>
+            </div>
+   <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in teachers %}    
+                    <tr>
+                        <td>{{row.teacherName}}</td>
+                        <td>{{row.teacherEmail}}</td>
+                        <td>
+                            <a class="add" title="Add" data-toggle="tooltip" id="{{row.id}}"><i class="fa fa-user-plus"></i></a>
+                            <a class="edit" title="Edit" data-toggle="tooltip" id="{{row.id}}"><i class="fa fa-pencil"></i></a>
+                            <a class="delete" title="Delete" data-toggle="tooltip" id="{{row.id}}"><i class="fa fa-trash-o"></i></a>
+                        </td>
+                    </tr>   
+                    {% endfor %}    
+                </tbody>
+            </table>
+        </div>
+    </div>     
+</body>
+
+<!--for some reason script only works if after code-->
+<script src="/static/js/editTeachers2.js"></script>
+
+<!--https://www.youtube.com/watch?v=pB2IJfiT6Z0-->

@@ -1,7 +1,67 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<style>
+.card {
+	color:#fff;
+    height: 500px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #406fa9, #4f62b8);
+    border: none;
+    margin: auto;
+    width: 30%;
+    }
 
-<body>
-    <p>Email: {{ email }}</p>
-    <p>First name: {{ firstName }}</p>
-    <p>Last name: {{ lastName }}</p>
-</body>
+.content{
+  font-family: Arial, Helvetica, sans-serif;
+  width:100%;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  text-align: center;  
+}
+
+.label{
+  outline-style: inset;
+  border-radius: 20px;
+  margin-top: 50px;
+}
+
+.home{
+  position:absolute;
+  float: left;
+  margin-top: 3%;
+  margin-right: 800px;
+  top:0;
+  left:3%;
+}
+</style>
+
+<a class='btn btn-secondary btn-lg home', href="{{ url_for('home') }}">Home</a>
+<h1 class="display-4 text-center" style="margin-top: 20px;">User Profile</h1>
+
+<div class="content">
+
+    <div class="card p-3 py-4">
+        <div class="text-center col"> 
+            <h1 class="h4 label">Email</h1>
+            <p class="h5">{{ email }}</p>
+        
+            <h1 class="h4 label">First Name</h1>
+            <p class="h5">{{ firstName }}</p>
+
+            <h1 class="h4 label">Last Name</h1>
+            <p class="h5">{{ lastName }}</p>
+
+            <a style="margin-top: 20px;" class='btn btn-success btn-lg', href="{{ url_for('editTeachers') }}">Edit Teachers</a>
+
+        </div>
+        
+    </div>
+</div>

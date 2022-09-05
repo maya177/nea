@@ -1,54 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@100;300;400;700&display=swap');
-
-body {
-  background-color: #f0f5ff;
-  font-family: 'Jost',sans-serif;
-  color: #fff;
+.form-container{
+  font-family: Arial, Helvetica, sans-serif;
+  padding:10px;
+  padding-bottom:25px;
+  margin:0 auto;
+  margin-top:20px;
+  width:50%;
+  border-radius:20px;
+  background-color: #ececec;
 }
 
-.wrapper {
-  width: 400px;
-  margin: 40px auto;
-  padding: 10px;
-  border-radius: 5px;
-  background: white;
-  box-shadow: 0px 10px 40px 0px rgba(47,47,47,.1);
+.add-one{
+  color:green;
+  text-align:center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight:bolder;
+  cursor:pointer;
+  margin-top:10px;
 }
 
-input[type="text"]{
-  padding: 10px;
-  margin: 10px auto;
-  display: block;
-  border-radius: 5px;
-  border: 1px solid lightgrey;
-  background: none;
-  width: 274px;
-  color: black;
+.delete{
+  color:white;
+  background-color:rgb(231, 76, 60);
+  text-align:center;
+  margin-top:6px;
+  font-weight:700;
+  border-radius:5px;
+  min-width:20px;
+  cursor:pointer;
 }
 
-input[type="text"]:focus {
-  outline: none;
+#singlebutton{
+  font-family: Arial, Helvetica, sans-serif;
+  width:100%;
+  margin-top:20px;
 }
 
-.controls {
-  width: 294px;
-  margin: 15px auto;
+.title{
+  font-family: Arial, Helvetica, sans-serif;
+  text-align:center;
+  font-size:40px;
+  margin-bottom:40px;
 }
 
-#remove_fields {
-  float: right;
-}
-.controls a i.fa-minus {
-  margin-right: 5px;
-}
-
-a {
-  color: black;
-  text-decoration: none;
-}
-
-h1 {
-  text-align: center;
-  font-size: 48px;
-  color: #232c3d;
+.dynamic-element{
+  margin-bottom:0px;
 }

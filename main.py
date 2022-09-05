@@ -1,3 +1,6 @@
+
+
+from ctypes import Union
 from gettext import npgettext
 import json
 from operator import truediv
@@ -118,24 +121,30 @@ def addTeachers():
 
         conn = get_db_connection()
         im_dict = request.form
+        print(im_dict)
+        items = list(im_dict.items())
 
         #multi dictionary when multi field form
         #so using im_dict[i] will not work
-        for i in range(len(im_dict)):
+
+
+        for i in range(len(items)):           
             if i%2 == 0:
                 print(i)
-                teacherName = im_dict[str(i)]
-                teacherEmail = im_dict[str(i+1)]
-                conn.execute("INSERT INTO teachers (teacherEmail,teacherName) VALUES(?,?)",(teacherEmail,teacherName))
+                teacherName = items[i][1]
+                teacherEmail = items[i+1][1]
 
-                session["email"] = "su@subridgman.com"
+                conn.execute("INSERT INTO teachers (teacherEmail,teacherName) VALUES(?,?)",(teacherEmail,teacherName))
+                conn.commit()
+
                 try:
                     studentEmail = session["email"]
                     conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES(?,?)",(studentEmail,teacherEmail))
                     conn.commit()
                 except:
-                   flash("please log in")
-                   return(url_for("login"))
+                    
+                    flash("please log in")
+                    return redirect(url_for("login"))
         conn.close()
                 
         return redirect(url_for("home"))
@@ -223,8 +232,8 @@ def forgotPasswrd():
 #need to select most recent code 
 @app.route('/forgotPasswrdCode', methods=['POST','GET'])
 def forgotPasswrdCode():
-    print(session["resetPasswrd"])
-    try:
+    session["resetPasswrd"] = True
+    if "resetPasswrd" in session:
         if session["resetPasswrd"] == True:
             if request.method == 'POST':
 
@@ -246,10 +255,10 @@ def forgotPasswrdCode():
                         return("wrong code")
         else:
             flash("Please reset password from here")
-            return redirect(url_for("login"))
-    except:
+            return redirect(url_for("forgotPasswrd"))
+    else:
         flash("Please reset password from here")
-        return redirect(url_for("login"))
+        return redirect(url_for("forgotPasswrd"))
         
 
     return render_template("forgotPasswrdCode.html")
@@ -377,7 +386,6 @@ def threshold2():
             if "email" in session:
                 totalThreshold = 1
                 conn = get_db_connection()
-                #session["email"] = "su@subridgman.com"
                 studentEmail = session["email"]
                 date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
 
@@ -397,111 +405,227 @@ def compare():
     #set up connections/sessions
     conn = get_db_connection()
     cur = conn.cursor()
-    x = session["x"]
-    fs = session["fs"]
-    session["email"] = "maya"
-    email = session["email"]
 
-    #----------------------------------------------------------------------
-    ##compute recording values
-    #zero crossing rate
-    zcrs = librosa.feature.zero_crossing_rate(x).mean()
-    #central spectroid
-    cent = librosa.feature.spectral_centroid(y=x, sr=fs).mean()
-    #mel scale converted freq
-    mel = 2595.0 * np.log10(1.0 + fs / 700.0)
+    if 'x' in session:
+        x = session["x"]
+        fs = session["fs"]
+        email = session["email"]
 
-    #loudness in rms
-    # Compute the spectrogram (magnitude)
-    n_fft = 2048
-    hop_length = 1024
-    spec_mag = abs(librosa.stft(x, n_fft=n_fft, hop_length=hop_length))
-    # Convert the spectrogram into dB
-    spec_db = librosa.amplitude_to_db(spec_mag)
-    # Compute A-weighting values
-    freqs = librosa.fft_frequencies(sr=fs, n_fft=n_fft)
-    a_weights = librosa.A_weighting(freqs)
-    a_weights = np.expand_dims(a_weights, axis=1)
-    # Apply the A-weghting to the spectrogram in dB
-    spec_dba = spec_db + a_weights
-    # Compute the "loudness" value
-    loudness = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
+        #----------------------------------------------------------------------
+        ##compute recording values
+        #zero crossing rate
+        zcrs = librosa.feature.zero_crossing_rate(x).mean()
+        #central spectroid
+        cent = librosa.feature.spectral_centroid(y=x, sr=fs).mean()
+        #mel scale converted freq
+        mel = 2595.0 * np.log10(1.0 + fs / 700.0)
 
-    total = 42
-    #----------------------------------------------------------------------
-    try:
-        cur.execute("SELECT zcrs, cent, mel, loudness, totalThreshold FROM thresholds where studentEmail = (?) ORDER BY recordTime DESC", [email])
-        rec_threshold = cur.fetchone()
+        #loudness in rms
+        # Compute the spectrogram (magnitude)
+        n_fft = 2048
+        hop_length = 1024
+        spec_mag = abs(librosa.stft(x, n_fft=n_fft, hop_length=hop_length))
+        # Convert the spectrogram into dB
+        spec_db = librosa.amplitude_to_db(spec_mag)
+        # Compute A-weighting values
+        freqs = librosa.fft_frequencies(sr=fs, n_fft=n_fft)
+        a_weights = librosa.A_weighting(freqs)
+        a_weights = np.expand_dims(a_weights, axis=1)
+        # Apply the A-weghting to the spectrogram in dB
+        spec_dba = spec_db + a_weights
+        # Compute the "loudness" value
+        loudness = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
+        #----------------------------------------------------------------------
 
-        t_zcrs = rec_threshold[0]
-        t_cent = rec_threshold[1]
-        t_mel = rec_threshold[2]
-        t_loudness = rec_threshold[3]
-        t_total= rec_threshold[4]
-    except:
-        return redirect(url_for("threshold"))
+        zcrs = round(zcrs,2)
+        cent = round(cent,2)
+        mel = round(mel,2)
+        loudness = round(loudness,2)
 
-    #----------------------------------------------------------------------
-    #compare values
-    a = 100
-    b = 20
-    if b<a:
-        comp = "The current audio level is below your recorded threshold"
-    else:
-        comp = "The current audio level is above your recorded threshold"
+        total = 0.67
+        #----------------------------------------------------------------------
+        try:
+            cur.execute("SELECT zcrs, cent, mel, loudness, totalThreshold FROM thresholds where studentEmail = (?) ORDER BY recordTime DESC", [email])
+            rec_threshold = cur.fetchone()
 
-    #----------------------------------------------------------------------
-    #get teachers/send to teachers
-    cur.execute("SELECT teachers.teacherName FROM teachers, students, relationships where students.email = (?) AND students.email = relationships.studentEmail AND teachers.teacherEmail = relationships.teacherEmail", [email])
-    teachers = cur.fetchall()
+            t_zcrs = rec_threshold[0]
+            t_cent = rec_threshold[1]
+            t_mel = rec_threshold[2]
+            t_loudness = rec_threshold[3]
+            t_total= rec_threshold[4]
+        except:
+            return redirect(url_for("threshold"))
 
-    if request.method == 'POST':
-        server.starttls()
-        server.login(sender_email, password)
-
-        teacherName = request.form["teacher"]
-
-        cur.execute("SELECT teacherEmail FROM teachers where teacherName = (?)", [teacherName])
-        teacherEmail = cur.fetchone()
-
-
-        cur.execute("SELECT firstName FROM students where email = (?)", [email])
-        studentName = cur.fetchone()
-
-        receiver_email = teacherEmail
-        SUBJECT = "Attend to child"
-        if total > t_total:
-            exceed = "exceeded"
+        #----------------------------------------------------------------------
+        #compare values
+        a = 100
+        b = 20
+        if b<a:
+            comp = "The current audio level is below your recorded threshold"
         else:
-            exceed = "did not exceed"
-        TEXT = f"{studentName[0]}'s threshold of {t_total} {exceed} the classroom noise level of {total}, please check on them"
-        msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
-        server.sendmail(sender_email, receiver_email, msg)
-        server.quit()
-        return redirect(url_for("home"))
+            comp = "The current audio level is above your recorded threshold"
 
-    conn.close()
-    return render_template("compare.html", zcrs=zcrs, cent=cent, mel=mel, loudness=loudness, teachers=teachers, comp=comp)
+        #----------------------------------------------------------------------
+        #get teachers/send to teachers
+        cur.execute("SELECT teachers.teacherName FROM teachers, students, relationships where students.email = (?) AND students.email = relationships.studentEmail AND teachers.teacherEmail = relationships.teacherEmail", [email])
+        teachers = cur.fetchall()
 
+        if request.method == 'POST':
+            server.starttls()
+            server.login(sender_email, password)
+
+            teacherName = request.form["teacher"]
+
+            cur.execute("SELECT teacherEmail FROM teachers where teacherName = (?)", [teacherName])
+            teacherEmail = cur.fetchone()
+
+
+            cur.execute("SELECT firstName FROM students where email = (?)", [email])
+            studentName = cur.fetchone()
+
+            receiver_email = teacherEmail
+            SUBJECT = "Attend to child"
+            if total > t_total:
+                exceed = "exceeded"
+            else:
+                exceed = "did not exceed"
+            TEXT = f"{studentName[0]}'s threshold of {t_total} {exceed} the classroom noise level of {total}, please check on them"
+            msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
+            server.sendmail(sender_email, receiver_email, msg)
+            server.quit()
+            return redirect(url_for("home"))
+
+        print(teachers)
+
+        conn.close()
+        return render_template("compare.html", zcrs=zcrs, cent=cent, mel=mel, loudness=loudness, teachers=teachers, comp=comp)
+
+    else:
+        flash("no audio recorded")
+        return redirect(url_for("recorder"))
+        
 
 @app.route("/userprofile",methods=['POST','GET'])
 def userprofile():
     conn = get_db_connection()
     cur = conn.cursor()
-  
+    
+    
     if "email" in session:
+
         email = session["email"]
 
         cur.execute("SELECT email, firstName, lastName FROM students where email = (?)", [email])
         studentrow = cur.fetchone()
         conn.close()
         
-        return redirect(url_for("userprofile"), email = studentrow[0], firstName = studentrow[1], lastName = studentrow[2])
+        return render_template(("userprofile.html"), email = studentrow[0], firstName = studentrow[1], lastName = studentrow[2])
     else:
         flash("not logged in, please log in")
         return redirect(url_for("login"))
 
+
+
+@app.route("/editTeachers",methods=['POST','GET'])
+def editTeachers():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if "email" in session:
+        email = session["email"]
+
+        cur.execute("SELECT teachers.teacherName, teachers.teacherEmail FROM teachers,students,relationships where students.email = (?) and relationships.studentEmail = students.email and relationships.teacherEmail = teachers.teacherEmail", [email])
+        teachers = cur.fetchall()
+
+        conn.close()
+        
+        return render_template("editTeachers.html", teachers=teachers)
+        #return redirect(url_for("userprofile"), email = studentrow[0], firstName = studentrow[1], lastName = studentrow[2])
+    else:
+        flash("not logged in, please log in")
+        return redirect(url_for("login"))
+
+@app.route("/ajax_add",methods=["POST","GET"])
+def ajax_add():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        email = session['email']
+        print(session['email'])
+        teacherName = request.form['teacherName']
+        teacherEmail = request.form['teacherEmail']
+
+        if teacherName == '':
+            msg = 'Please enter a teacher name'
+        elif teacherEmail == '':
+            msg = 'Please enter a teacher email'
+        else:
+            cur.execute("SELECT teacherName, teacherEmail FROM teachers where teacherEmail = (?)", [teacherEmail])
+            teacherRow = cur.fetchall()
+            
+            cur.execute("SELECT teacherEmail, studentEmail FROM relationships where studentEmail =? and teacherEmail=?", (str(email), teacherEmail))
+            relationshipRow = cur.fetchall()
+
+            print(len(relationshipRow))
+            print(len(teacherRow))
+            #if relationship already exists then do not add new relationship
+            if len(relationshipRow) != 0:
+                return jsonify("This teacher is already linked to this account")
+            #if teacher already exists in teachers but still needs to add relationship with student
+            elif len(teacherRow) != 0:
+                print("working")
+                conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES (?,?)", (str(email),teacherEmail))
+                conn.commit()
+            
+            #if teacher does not exist in teachers add to teachers and relationships, if teacher does not exist it cannot exist in relationships either
+            else:
+                print(teacherEmail, teacherName)
+                conn.execute("INSERT INTO teachers (teacherEmail,teacherName) VALUES (?,?)", (teacherEmail, teacherName))
+                conn.commit()
+
+                conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES (?,?)", (str(email),teacherEmail))
+                conn.commit()
+
+
+            conn.close()
+            msg = 'new record created successfully'
+        
+    return jsonify(msg)
+
+@app.route("/ajax_update",methods=["POST","GET"])
+def ajax_update():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        getEmail = request.form['string']
+        teacherName = request.form['teacherName']
+        teacherEmail = request.form['teacherEmail']
+
+        conn.execute("UPDATE teachers SET teacherEmail = ?, teacherName = ? WHERE teacherEmail = ? ", (teacherEmail, teacherName, getEmail))
+        conn.execute("UPDATE relationships SET teacherEmail = ? WHERE teacherEmail = ? ", (teacherEmail, getEmail))
+
+        conn.commit()
+        conn.close()
+        msg = 'Record successfully Updated'
+    return jsonify(msg)
+
+@app.route("/ajax_delete",methods=["POST","GET"])
+def ajax_delete(): 
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    if request.method == 'POST':
+        getEmail = request.form['string']
+
+        conn.execute('DELETE FROM teachers WHERE teacherEmail = ?', [getEmail])
+        conn.execute('DELETE FROM relationships WHERE teacherEmail = ?', [getEmail])
+
+        conn.commit()
+        cur.close()
+        msg = 'Record deleted successfully'
+    return jsonify(msg) 
+
 if __name__ =='__main__':
     app.run(host='localhost', port=5002, debug=True)
-
-            #return(session["firstName"])

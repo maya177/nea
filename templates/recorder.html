@@ -1,24 +1,36 @@
 <head>
   <meta charset="UTF-8">
-  <title>audio recorder prototype</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
+
   <link rel="stylesheet" type="text/css" href="./static/css/recorder.css">
+
+  <a class='btn btn-secondary btn-lg home', href="{{ url_for('home') }}">Home</a>
+
 </head>
 
-<body>
-  <h1>audio recorder prototype</h1>
 
-  <div id="controls">
-    <button id="recordButton">Record</button>
-    <button id="pauseButton" disabled>Pause</button>
-    <button id="stopButton" disabled>Stop</button>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+   {% for message in messages %}
+      {{ message }}
+   {% endfor %}
+{% endif %}
+{% endwith %}
+
+<body>
+  <h1 class="recorder display-1" >Audio recorder</h1>
+  <div class="content">
+    <div id="controls" class="content">
+      <button id="recordButton">Record</button>
+      <button id="pauseButton" disabled>Pause</button>
+      <button id="stopButton" disabled>Stop</button>
+      
+    </div>
+
+    <div id="formats">show number of channles and sample rate</div>
   </div>
-  <div id="formats">show number of channles and sample rate</div>
-  <p><strong>audio test:</strong></p>
-  <ol id="recordingsList"></ol>
+
 
   <script src="/static/js/recorder.js"></script>
   <script src="/static/js/app.js"></script>
 </body>
-
-

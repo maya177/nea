@@ -1,19 +1,125 @@
-<label>{{comp}}</label>
-<ul>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-    <li>{{zcrs}}</li>
-    <li>{{cent}}</li>
-    <li>{{mel}}</li>
-    <li>{{loudness}}</li>
-</ul>
+<link rel="stylesheet" href=
+"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+    </script>
+    <script src=
+"https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js">
+    </script>
+    <script src=
+"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js">
+    </script>
+  
+    <!-- CDN link used below is compatible with this example -->
+    <link rel="stylesheet" href=
+"https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+    <script src=
+"https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js">
+    </script>
+
+<style>
+.content{
+  font-family: Arial, Helvetica, sans-serif;
+  width:100%;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  text-align: center;  
+}
 
 
-<form action="" method="POST">
-<select name="teacher">
-{% for item in teachers %}
-<option value="{{ item.teacherName }}">{{ item.teacherName }}</option>
-{% endfor %}
-</select>
-<button type="submit">submit</button>
-</form>
+.feature{
+  justify-content: center;
+  margin-top:20px;
+}
+
+
+.value{
+  margin-left: 10px;
+}
+
+.card{
+    outline-style: inset;
+    border-radius: 20px;
+    width:40%;
+    margin:auto;
+}
+
+.home{
+  position:absolute;
+  float: left;
+  margin-top: 4%;
+  margin-right: 800px;
+  top:0;
+  left:3%;
+}
+
+</style>
+
+<a class='btn btn-secondary btn-lg home', href="{{ url_for('home') }}">Home</a>
+
+
+<h1 class="display-4 text-center" style="margin-top: 3%;">The audio features of the sound you recorded are...</h1>
+
+<div class="content">
+
+    <div class="col card">
+        <div class="row feature h4">
+            <p>Smoothness:</p>
+            <p class="value">{{zcrs}}</p>
+        </div>
+
+        <div class="row feature h4">
+            <p>Brightness: </p>
+            <p class="value">{{cent}}</p>
+        </div>
+
+        <div class="row feature h4">
+            <p>Frequency: </p>
+            <p class="value">{{mel}}</p>
+        </div>
+
+        <div class="row feature h4">
+            <p>Loudness: </p>
+            <p class="value">{{loudness}}</p>
+        </div>
+
+
+        <div class="row feature h4">
+            <p>Total audio score: </p>
+            <p class="value">0.67</p>
+        </div>
+
+    </div>
+
+    <p class="h4" style="margin-top:40px;">{{comp}}</p>
+
+    <p class="h4" style="margin-top:10px;">Send the results to a teacher: </p>
+
+    <form action="" method="POST" class=>
+
+    <select name="teacher" class="custom-select" style="width: 20%;" required="true">
+    {% for item in teachers %}
+    <option value="{{ item.teacherName }}">{{ item.teacherName }}</option>
+    {% endfor %}
+    </select>
+    
+    <button type="submit" class="btn btn-primary">submit</button>
+    </form>
+
+
+
+</div>
+
+
     
