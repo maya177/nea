@@ -569,6 +569,8 @@ def ajax_add():
 
             print(len(relationshipRow))
             print(len(teacherRow))
+
+
             #if relationship already exists then do not add new relationship
             if len(relationshipRow) != 0:
                 return jsonify("This teacher is already linked to this account")
@@ -607,7 +609,7 @@ def ajax_update():
         conn.execute("UPDATE relationships SET teacherEmail = ? WHERE teacherEmail = ? ", (teacherEmail, getEmail))
 
         conn.commit()
-        conn.close()
+        cur.close()
         msg = 'Record successfully Updated'
     return jsonify(msg)
 

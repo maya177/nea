@@ -1,5 +1,17 @@
 work on database attribute diagram
 
-scale values and get recent thresholds then compare in /compa
+scale values and get recent thresholds in /compare
 
-if page only accessible thro home page which is onyl accessible if logged in, is session handling required?
+session handling for all pages/exception handling
+
+fix only able to add one teacher in add teachers
+
+
+Fields are not closing after submission in edit teachers
+
+Recorder should be redirected if session not in 
+
+Records not deleting properly when field not closed
+
+Forgot password page if password/code not valid should be handled
+Handle sql error in all
