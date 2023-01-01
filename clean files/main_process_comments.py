@@ -17,6 +17,16 @@ from random import randint
 now = datetime.now()
 app = Flask(__name__)
 
+#https://stackoverflow.com/questions/6332577/send-outlook-email-via-python
+#https://stackoverflow.com/questions/37058567/configure-flask-mail-to-use-gmail
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_PORT = 587
+#EMAIL_HOST_USER = 'mayaNbridgman@gmail.com'
+#EMAIL_HOST_PASSWORD = 'lboesehsgspqsxny'
+#EMAIL_USE_TLS = True
+#EMAIL_USE_SSL = False 
+#mail = Mail(app)
+
 sender_email = "mayaNbridgman@gmail.com"
 receiver_email = ""
 password = "lboesehsgspqsxny"
@@ -24,9 +34,11 @@ SUBJECT = ""
 TEXT = ""
 msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
 server = smtplib.SMTP("smtp.gmail.com", 587)
- 
+
+
 # stores session in temp directory on flask server instead of in a cookie
 app.config["SESSION_FILE_DIR" ]= mkdtemp()
+
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
