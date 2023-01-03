@@ -17,6 +17,7 @@ from random import randint
 now = datetime.now()
 app = Flask(__name__)
 
+#setting up SMTP email server
 sender_email = "mayaNbridgman@gmail.com"
 receiver_email = ""
 password = "lboesehsgspqsxny"
@@ -25,37 +26,38 @@ TEXT = ""
 msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
 server = smtplib.SMTP("smtp.gmail.com", 587)
  
-# stores session in temp directory on flask server instead of in a cookie
+#sessions used to store user information in a temporary directory on flask server instead of using cookies
 app.config["SESSION_FILE_DIR" ]= mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
-#begin session
+#start the Flask session
 app.config.from_object(__name__)
 Session(app)
 
+#connecting to database
 def get_db_connection():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
 
-#user redirects instead of render template as it re requests form i think
+##user redirects instead of render template as it re requests form i think
+
 @app.route('/',methods=['POST','GET'])
 def signup():
 
-    # if user is currently logged in
+    #there is a POST request if user is currently logged in
     if request.method=='POST':
         session.clear()
         conn = get_db_connection()
-        #instead of just request.form
-        #request.form.get[x, False] removes the assumption that it will always be part of the request
-        #also use () instead of [] because .get is a method
+
+        #retrieving user input
         email = request.form.get("email", False)
         firstName = request.form.get("firstName", False)
         lastName = request.form.get("lastName", False)
         passwrd = request.form.get("password", False)
 
-
+        #validating empty fields
         if not email:
             flash("Please enter an email")
             return redirect("/")
@@ -69,15 +71,19 @@ def signup():
             flash("Please enter a password")
             return redirect("/")
         
+        #validating password to ensure complexity
         if not re.search("^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{7,}$", passwrd):
             flash("Please enter a password that is over 7 characters, has upper and lower case letters, a number, and a special character")
             return redirect("/")
 
         passwrd =  hashlib.md5(passwrd.encode())
+
+        #validating email input
         if not re.search("[a-z0-9]+@[a-z]+\.[a-z]{2,3}", email):
             flash("Please enter a valid email address")
             return redirect("/")
         try:
+            #inserting data into database
             conn.execute("INSERT INTO students (firstName,lastName,email,passwrd) VALUES(?,?,?,?)",(firstName,lastName,email,passwrd.hexdigest()))
             conn.commit()
             conn.close()
@@ -98,20 +104,15 @@ def signup():
 @app.route('/addTeachers', methods=['POST','GET'])
 def addTeachers():
     if request.method=='POST':
-        print("getting data")
+        print("receiving data")
 
         conn = get_db_connection()
         im_dict = request.form
-        print(im_dict)
+        #data is retrieved as a multi-dictionary so cannot be selected by im_dict[i]
         items = list(im_dict.items())
-
-        #multi dictionary when multi field form
-        #so using im_dict[i] will not work
-
 
         for i in range(len(items)):           
             if i%2 == 0:
-                print(i)
                 teacherName = items[i][1]
                 teacherEmail = items[i+1][1]
 
@@ -123,7 +124,6 @@ def addTeachers():
                     conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES(?,?)",(studentEmail,teacherEmail))
                     conn.commit()
                 except:
-                    
                     flash("please log in")
                     return redirect(url_for("login"))
         conn.close()
@@ -140,9 +140,11 @@ def login():
         conn = get_db_connection()
         cur = conn.cursor()
 
+        #retrieve email and password inputted by user
         email = request.form.get("email", False)
         passwrd = hashlib.md5(request.form.get("password").encode())
 
+        #validating empty fields
         if not email:
             flash("please enter an email")
             return redirect("/login")
@@ -150,11 +152,13 @@ def login():
             flash("please enter a passwrd")
             return redirect("/login")
 
+        #retrieving user information from database
         cur.execute("SELECT email, passwrd, firstName, lastName FROM students where email = (?)", [email])
         studentrow = cur.fetchone()
         conn.close()
 
         try:
+            #checking if password inputted matches password from database
             if passwrd.hexdigest() == studentrow[1]:
                 session["email"] = email
                 session["firstName"] = studentrow[2]
@@ -175,11 +179,10 @@ def forgotPasswrd():
         conn = get_db_connection()
         cur = conn.cursor()
 
+        #retrieves student email from database
         email = request.form.get("email", False)
         cur.execute("SELECT email FROM students where email = (?)", [email])
         studentEmail = cur.fetchone()
-        print(studentEmail)
-        print(len(studentEmail))
         
         if len(studentEmail) == 0:
             flash("This email does not exist, enter another email")
@@ -189,12 +192,14 @@ def forgotPasswrd():
             session["resetPasswrd"] = True
             print(session["resetPasswrd"])
 
+            #creating code and inserting it into database
             code = randint(1000000,9999999)
             date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
             conn.execute("INSERT INTO forgotPasswrd (email,recordTime,code) VALUES(?,?,?)",(email,date_time,code))
             conn.commit()
             conn.close()
 
+            #sending email over SMTP server to user
             server.starttls()
             server.login(sender_email, password)
             receiver_email = email
@@ -206,14 +211,12 @@ def forgotPasswrd():
             server.quit()
 
             return redirect(url_for("forgotPasswrdCode"))
-           
+
     return render_template("forgotPasswrd.html")
 
 
-#need to select most recent code 
 @app.route('/forgotPasswrdCode', methods=['POST','GET'])
 def forgotPasswrdCode():
-    session["resetPasswrd"] = True
     if "resetPasswrd" in session:
         if session["resetPasswrd"] == True:
             if request.method == 'POST':
@@ -222,6 +225,7 @@ def forgotPasswrdCode():
                 conn = get_db_connection()
                 cur = conn.cursor()
 
+                #select most recent password reset code from database
                 getCode = request.form.get("code", False)
                 cur.execute("SELECT code FROM forgotPasswrd where email = (?) ORDER BY recordTime DESC", [email])
                 code = cur.fetchone()
@@ -241,15 +245,12 @@ def forgotPasswrdCode():
         flash("Please reset password from here")
         return redirect(url_for("forgotPasswrd"))
         
-
     return render_template("forgotPasswrdCode.html")
 
 
 @app.route('/resetPasswrd', methods=['POST','GET'])
 def resetPasswrd():
-    #try:
         if session["resetPasswrd"] == True:
-
             if request.method == 'POST':
    
                 email = session["resetEmail"]
@@ -258,27 +259,24 @@ def resetPasswrd():
 
                 passwrd = request.form.get("passwrd", False)
 
+                #validating inputted password
                 if not re.search("^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{7,}$", passwrd):
                     flash("Please enter a password that is over 7 characters, has upper and lower case letters, a number, and a special character")
                     return redirect("/resetPasswrd")
                 
                 newPasswrd = hashlib.md5(passwrd.encode())
-                print(newPasswrd.hexdigest())
-                print(email)
 
+                #updating database record to new password 
                 cur.execute("UPDATE students set passwrd = (?) WHERE email = (?)", (str(newPasswrd.hexdigest()), str(email)))
                 conn.commit()
 
                 conn.close()
                 return redirect(url_for("login"))
 
-        else:
+        else: 
             flash("Please reset password from here")
             return redirect(url_for("login"))
-    #except:
-    #    flash("Please reset password from here")
-    #    return redirect(url_for("login"))
-
+ 
         return render_template("resetPasswrd.html")
 
 
@@ -297,10 +295,13 @@ def home():
 @app.route("/recorder", methods=['GET','POST'])
 def recorder():
     if request.method == 'POST':
+        #retrieves audio data and stores file locally
         filename = datetime.now().strftime("%Y-%m-%d-%H-%M")
         f = open(f'./static/recordings/{filename}.wav', 'wb')
         f.write(request.data)
         f.close()
+
+        #the 'x' variable stores the audio data and the 'fs' variable stores the sampling rate in Hertz of the audio recorded
         x, fs = librosa.load(f'./static/recordings/{filename}.wav')
 
         session["x"] = x
@@ -312,11 +313,13 @@ def recorder():
     
     return render_template("recorder.html")
 
+##literally spent 1.5 hrs figuring out that ajax doesn't do normal redirects, had to implement success function in js that one tutorial lied
+
 @app.route("/threshold1", methods=['GET','POST'])
 def threshold1():    
-    #literally spent 1.5 hrs figuring out that ajax doesn't do normal redirects, had to implement success function in js that one tutorial lied
     if request.method == 'POST':
         try:
+            #using JavaScript success function to redirect to threshold2 page
             return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         except:
             flash("error, try again")
@@ -327,35 +330,33 @@ def threshold1():
 def threshold2():
     if request.method == 'POST':
         try:
-           #json_load()
-            #request.json['data']
-
             data = request.get_json()
             path = data['src']
             #x is audio points, fs is sample rate
+            #t_ indicates temporary use
             t_x, t_fs = librosa.load(path)
 
-            #zero crossing rate
+            #zero crossing rate mean value extracted
             zcrs = librosa.feature.zero_crossing_rate(t_x).mean()
-            #central spectroid
+            #central spectroid mean value extracted
             cent = librosa.feature.spectral_centroid(y=t_x, sr=t_fs).mean()
-            #mel scale converted freq
+            #converting the sample rate to the mel scale to represent frequency
             mel = 2595.0 * np.log10(1.0 + t_fs / 700.0)
 
-            ##loudness in rms
-            # Compute the spectrogram (magnitude)
+            ##loudness - Root Mean Square - value extracted
+            #computing the magnitude spectrogram
             n_fft = 2048
             hop_length = 1024
             spec_mag = abs(librosa.stft(t_x, n_fft=n_fft, hop_length=hop_length))
-            # Convert the spectrogram into dB
+            #converting the spectogram into decibels
             spec_db = librosa.amplitude_to_db(spec_mag)
-            # Compute A-weighting values
+            #calculating A-weighting values
             freqs = librosa.fft_frequencies(sr=t_fs, n_fft=n_fft)
             a_weights = librosa.A_weighting(freqs)
             a_weights = np.expand_dims(a_weights, axis=1)
-            # Apply the A-weghting to the spectrogram in dB
+            #applying A-weighting values to magnitude spectogram
             spec_dba = spec_db + a_weights
-            # Compute the "loudness" value
+            #calculating final loudness value
             loudness = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
 
             print(zcrs)
@@ -438,7 +439,7 @@ def compare():
             return redirect(url_for("threshold"))
 
         #----------------------------------------------------------------------
-        #compare values
+        #compare values using above
         a = 100
         b = 20
         if b<a:
@@ -491,9 +492,8 @@ def userprofile():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    
     if "email" in session:
-
+        #retrieving user data from database
         email = session["email"]
 
         cur.execute("SELECT email, firstName, lastName FROM students where email = (?)", [email])
@@ -517,11 +517,9 @@ def editTeachers():
 
         cur.execute("SELECT teachers.teacherName, teachers.teacherEmail FROM teachers,students,relationships where students.email = (?) and relationships.studentEmail = students.email and relationships.teacherEmail = teachers.teacherEmail", [email])
         teachers = cur.fetchall()
-
         conn.close()
         
         return render_template("editTeachers.html", teachers=teachers)
-        #return redirect(url_for("userprofile"), email = studentrow[0], firstName = studentrow[1], lastName = studentrow[2])
     else:
         flash("not logged in, please log in")
         return redirect(url_for("login"))
@@ -533,10 +531,12 @@ def ajax_add():
 
     if request.method == 'POST':
         email = session['email']
-        print(session['email'])
+
+        #retrieve teacher to change from user input on web page
         teacherName = request.form['teacherName']
         teacherEmail = request.form['teacherEmail']
 
+        #allow user to input new teacher information
         if teacherName == '':
             msg = 'Please enter a teacher name'
         elif teacherEmail == '':
@@ -548,20 +548,17 @@ def ajax_add():
             cur.execute("SELECT teacherEmail, studentEmail FROM relationships where studentEmail =? and teacherEmail=?", (str(email), teacherEmail))
             relationshipRow = cur.fetchall()
 
-            print(len(relationshipRow))
-            print(len(teacherRow))
-
-
-            #if relationship already exists then do not add new relationship
+            #if relationship between teacher and student already exists then do not add new relationship
             if len(relationshipRow) != 0:
                 return jsonify("This teacher is already linked to this account")
-            #if teacher already exists in teachers but still needs to add relationship with student
+            #if teacher already exists in 'teachers' but not in relationship with student, add relationship with student
             elif len(teacherRow) != 0:
                 print("working")
                 conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES (?,?)", (str(email),teacherEmail))
                 conn.commit()
             
-            #if teacher does not exist in teachers add to teachers and relationships, if teacher does not exist it cannot exist in relationships either
+            #if teacher does not exist in 'teachers', add to 'teachers' and 'relationships'
+            #this is because a teacher must exist in 'teachers' to be in 'relationships'
             else:
                 print(teacherEmail, teacherName)
                 conn.execute("INSERT INTO teachers (teacherEmail,teacherName) VALUES (?,?)", (teacherEmail, teacherName))
@@ -569,7 +566,6 @@ def ajax_add():
 
                 conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES (?,?)", (str(email),teacherEmail))
                 conn.commit()
-
 
             conn.close()
             msg = 'new record created successfully'
@@ -582,10 +578,12 @@ def ajax_update():
     cur = conn.cursor()
 
     if request.method == 'POST':
+        #retrieve user input from web page
         getEmail = request.form['string']
         teacherName = request.form['teacherName']
         teacherEmail = request.form['teacherEmail']
 
+        #update teacher information in database
         conn.execute("UPDATE teachers SET teacherEmail = ?, teacherName = ? WHERE teacherEmail = ? ", (teacherEmail, teacherName, getEmail))
         conn.execute("UPDATE relationships SET teacherEmail = ? WHERE teacherEmail = ? ", (teacherEmail, getEmail))
 
@@ -602,6 +600,7 @@ def ajax_delete():
     if request.method == 'POST':
         getEmail = request.form['string']
 
+        #delete record from 'teachers' and 'relationships'
         conn.execute('DELETE FROM teachers WHERE teacherEmail = ?', [getEmail])
         conn.execute('DELETE FROM relationships WHERE teacherEmail = ?', [getEmail])
 
