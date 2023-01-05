@@ -5,9 +5,7 @@
   <link rel="stylesheet" type="text/css" href="./static/css/recorder.css">
 
   <a class='btn btn-secondary btn-lg home', href="{{ url_for('home') }}">Home</a>
-
 </head>
-
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}
@@ -24,7 +22,6 @@
       <button id="recordButton">Record</button>
       <button id="pauseButton" disabled>Pause</button>
       <button id="stopButton" disabled>Stop</button>
-      
     </div>
 
     <div id="formats">show number of channles and sample rate</div>

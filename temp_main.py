@@ -330,6 +330,8 @@ def threshold2():
     if request.method == 'POST':
         try:
             data = request.get_json()
+            volume = data['volume']
+            freq = data['pitch']
             path = data['src']
             #x is audio points, fs is sample rate
             #t_ indicates temporary use
@@ -358,19 +360,19 @@ def threshold2():
             #calculating final loudness value
             loudness = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
 
-            print(zcrs)
-            print(cent)
-            print(mel)
-            print(loudness)
+            zcrs = zcrs*freq
+            cent = cent*freq
+            mel = mel*freq
+            loudness = loudness*volume
 
-            #need to scale them here and multiply by scale factors
+            totalThreshold = zcrs/2 + mel/2 + cent/2 + 5*(1-loudness.exp(10*-1))
             if "email" in session:
                 totalThreshold = 1
                 conn = get_db_connection()
                 studentEmail = session["email"]
                 date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
 
-                conn.execute("INSERT INTO thresholds (studentEmail,recordTime,zcrs,cent,mel,loudness,totalThreshold) VALUES(?,?,?,?,?,?,?)",(studentEmail,date_time,zcrs,cent,mel,loudness,totalThreshold))
+                conn.execute("INSERT INTO thresholds (studentEmail,recordTime,zcrs,cent,mel,loudness,totalThreshold) VALUES(?,?,?,?,?,?,?)", (studentEmail,date_time,zcrs,cent,mel,loudness,totalThreshold))
                 conn.commit()
                 conn.close()
 
@@ -393,7 +395,7 @@ def compare():
         email = session["email"]
 
         #----------------------------------------------------------------------
-        ##compute recording values
+        ##extract audio features of recorded audio
         #zero crossing rate
         zcrs = librosa.feature.zero_crossing_rate(x).mean()
         #central spectroid
@@ -417,13 +419,15 @@ def compare():
         # Compute the "loudness" value
         loudness = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
         #----------------------------------------------------------------------
+        #calculate final values of recorded audio
 
         zcrs = round(zcrs,2)
         cent = round(cent,2)
         mel = round(mel,2)
         loudness = round(loudness,2)
 
-        total = 0.67
+        audioTotalThreshold = zcrs/2 + mel/2 + cent/2 + 5*(1-loudness.exp(10*-1))
+
         #----------------------------------------------------------------------
         try:
             cur.execute("SELECT zcrs, cent, mel, loudness, totalThreshold FROM thresholds where studentEmail = (?) ORDER BY recordTime DESC", [email])
@@ -438,17 +442,17 @@ def compare():
             return redirect(url_for("threshold"))
 
         #----------------------------------------------------------------------
-        #compare values using above
-        a = 100
-        b = 20
-        if b<a:
+        #compare total thresholds
+
+        if audioTotalThreshold < t_total:
             comp = "The current audio level is below your recorded threshold"
         else:
             comp = "The current audio level is above your recorded threshold"
 
         #----------------------------------------------------------------------
         #get teachers/send to teachers
-        cur.execute("SELECT teachers.teacherName FROM teachers, students, relationships where students.email = (?) AND students.email = relationships.studentEmail AND teachers.teacherEmail = relationships.teacherEmail", [email])
+        cur.execute("""SELECT teachers.teacherName FROM teachers, students, relationships where students.email = (?) 
+        AND students.email = relationships.studentEmail AND teachers.teacherEmail = relationships.teacherEmail""", [email])
         teachers = cur.fetchall()
 
         if request.method == 'POST':
@@ -466,17 +470,15 @@ def compare():
 
             receiver_email = teacherEmail
             SUBJECT = "Attend to child"
-            if total > t_total:
+            if audioTotalThreshold > t_total:
                 exceed = "exceeded"
             else:
                 exceed = "did not exceed"
-            TEXT = f"{studentName[0]}'s threshold of {t_total} {exceed} the classroom noise level of {total}, please check on them"
+            TEXT = f"{studentName[0]}'s threshold of {t_total} {exceed} the classroom noise level of {audioTotalThreshold}, please check on them"
             msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
             server.sendmail(sender_email, receiver_email, msg)
             server.quit()
             return redirect(url_for("home"))
-
-        print(teachers)
 
         conn.close()
         return render_template("compare.html", zcrs=zcrs, cent=cent, mel=mel, loudness=loudness, teachers=teachers, comp=comp)

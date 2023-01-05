@@ -1,7 +1,7 @@
-//AudioContext is defined from the Web Audio API
+//have hardcoded btns because for some reason loops aren't working, neither are .getelementbyclassname it won't let me disable multiple at once
+
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-//elements are defined that match up with those in threshold1.html
 const audio1 = document.getElementById('audio1');
 const audio2 = document.getElementById('audio2');
 const audio3 = document.getElementById('audio3');
@@ -11,6 +11,7 @@ const audio5 = document.getElementById('audio5');
 const audioContext = new AudioContext();
 const source = audioContext.createMediaElementSource(audio1);
 source.connect(audioContext.destination);
+
 
 const durationToggler1 = document.getElementById('duration-toggler1');
 const durationToggler2 = document.getElementById('duration-toggler2');
@@ -41,8 +42,19 @@ let duration;
 
 var audios = document.getElementsByClassName("audio");
 
-//establishing functionality for all play and bause buttons (each audio has a play, pause, and submit button)
-//if a play button has been clicked, all play buttons are disabled so no other audio can be played unless the current is paused
+
+
+//const analyzer = Meyda.createMeydaAnalyzer({
+//  audioContext: audioContext,
+//  source: source,
+//  bufferSize: 512,
+//  featureExtractors: ["rms"],
+//  callback: (features) => {
+//    console.log(features);
+//  },
+//});
+
+
 playBtn1.onclick = () => {
   audioContext.resume();
 
@@ -56,7 +68,6 @@ playBtn1.onclick = () => {
   audio1.play();
   audio1.loop = true;
 }
-//if a pause button has been clicked, all play buttons are enabled so the user can play any of the audios
 pauseBtn1.onclick = () => {
   
   playBtn1.disabled = false;
@@ -174,9 +185,10 @@ pauseBtn5.onclick = () => {
   audio4.pause();
 }
 
-//submitting the selected audio to the Flask app using ajax
 var submitBtns = document.querySelectorAll( "submit" );
 var audios = document.querySelectorAll( "audio" );
+
+//for ( var i = 0; i < submitBtns.length; i++){}
 
 submitBtn1.onclick = () => {
   console.log(audio1.src);
@@ -239,6 +251,7 @@ submitBtn4.onclick = () => {
     }
   });
 }
+//can take out ajax because src carried to threshold2 and all submitted there
 submitBtn5.onclick = () => {
   console.log(audio5.src);
 
@@ -254,3 +267,4 @@ submitBtn5.onclick = () => {
     }
   });
 }
+//wasn't working because local storage data was json stringified

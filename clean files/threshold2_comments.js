@@ -1,3 +1,8 @@
+//.querySelector is a method of the Element interface and returns the first element within the document that matches the selectors
+//.getElementById references HTML elements in DOM
+//const data = JSON.parse(localStorage.getItem('src'));
+
+//playback rate range is x0.25 to x4
 const data = localStorage.getItem('src');
 var audio = document.getElementById('audio');
 audio.src=data;
@@ -6,6 +11,18 @@ audio.load();
 const durationIndicator = document.querySelector('.audio-duration-indicator');
 const volumeIndicator = document.querySelector('.volume-indicator');
 const freqIndicator = document.querySelector('.freq-indicator');
+
+console.log("data")
+console.log(data)
+console.log(typeof(data))
+
+//not working w var but works hardcoded
+//workaround
+//var str = "<audio controls><source src=' "+$scope.data+" ' type='audio/wav'></audio>";
+
+//var str = "<audio id='audio' "+"./static/audiobuzz.mp3"+" '</audio>";
+//document.getElementById('audio').innerHTML = str;
+//console.log(audio.getAttribute('src'));
 
 const durationToggler = document.getElementById('duration-toggler');
 const volumeToggler = document.getElementById('volume-toggler');
@@ -19,17 +36,15 @@ const submitBtn = document.getElementById('submit');
 let duration;
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-//get audio duration from audio metadata
+
 audio.addEventListener('loadedmetadata', () => {
   duration = audio.duration;
 })
 
-//set current time to indicate progress through audio on progress bar
 const setCurrentTime = (currentTime) => {
   audio.currentTime = currentTime;
 }
 
-//get current duration of audio elapsed
 const getAudioProgress = (currentTime) => {
   const progress = currentTime / duration * 100
   durationIndicator.style.width = progress + '%';
@@ -37,13 +52,11 @@ const getAudioProgress = (currentTime) => {
   return progress;
 }
 
-//update current time as audio plays
 audio.addEventListener('timeupdate', (e) => {
   const currentTime = e.target.currentTime;
   getAudioProgress(currentTime);
 });
 
-//show progress on progress bar using duration toggler
 durationToggler.addEventListener('input', (e) => {
   const progress = parseInt(e.target.value);
   const time = progress / 100 * duration;
@@ -51,7 +64,6 @@ durationToggler.addEventListener('input', (e) => {
   getAudioProgress(time, duration);
 })
 
-//allows the user to adjust the volume of audio playing
 volumeToggler.addEventListener('input', (e) => {
   const value = e.target.value;
   const volume = value / 100;
@@ -59,8 +71,6 @@ volumeToggler.addEventListener('input', (e) => {
   volumeIndicator.style.width = value + '%';
 })
 
-//allows the user to adjust the frequency of audio by changing audio playback rate
-//playback rate range is x0.25 to x4
 freqToggler.addEventListener('input', (e) => {
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -68,6 +78,7 @@ freqToggler.addEventListener('input', (e) => {
   console.log(value)
   audio.webiktPreservesPitch = false;
   
+  //cannot use const in if statements
   if (value < 50){
     var pitch = ((value*2)/100);
   } else if (value > 50){
@@ -77,12 +88,16 @@ freqToggler.addEventListener('input', (e) => {
     var pitch = 0.6
   }
 
+  //const semitones = value / 100;
+  //var semitoneRatio = Math.pow(2, 1/12);
+  //audio.playbackRate = Math.pow(semitoneRatio, semitones);
   audio.playbackRate = pitch;
+  //audio.detune.value = pitch*100;
   audio.loop = true;
   volumeIndicator.style.width = value + '';
 })
 
-//plays audio
+
 playBtn.onclick = () => {
   console.log("play btn")
   playBtn.disabled = true;
@@ -90,14 +105,12 @@ playBtn.onclick = () => {
   audio.play();
 }
 
-//pauses audio
 pauseBtn.onclick = () => {
 pauseBtn.disabled = true;
 playBtn.disabled = false;
 audio.pause();
 }
 
-//mutes audio
 muteBtn.onclick = () => {
 if (audio.muted) {
   audio.muted = false;
@@ -108,7 +121,6 @@ if (audio.muted) {
 }
 }
 
-//submits the volume and pitch chosen by user to Flask app using ajax
 submitBtn.onclick = () => {
   console.log(audio.volume)
   console.log(audio.playbackRate)

@@ -10,15 +10,16 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="./static/css/editTeachers.css">
-
 </head>
 
+<!--acts as back button to navigate back to user profile-->
 <a class='btn btn-secondaary btn-lg home', href="/userprofile">User Profile</a>
 
 <body>
     <div class="container"><p><h1 align="center">Edit your teachers</h1></p>
         <div class="table-wrapper">
             <div class="table-title">
+                <!--co-ordinates with JavaScript file 'editTeachers.js' to display the details of existing teachers and allow new teachers to be added-->
                 <div class="row">
                     <div class="col-sm-8"><h2>Teacher details</h2></div>
                     <div class="col-sm-4">
@@ -29,6 +30,7 @@
             </div>
    <table class="table table-bordered">
                 <thead>
+                    <!--details of teacher-->
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
@@ -39,6 +41,7 @@
                     <tr>
                         <td>{{row.teacherName}}</td>
                         <td>{{row.teacherEmail}}</td>
+                        <!--buttons allowing user to add, edit, or delete teacher details-->
                         <td>
                             <a class="add" title="Add" data-toggle="tooltip" id="{{row.teacherEmail}}"><i class="fa fa-user-plus"></i></a>
                             <a class="edit" title="Edit" data-toggle="tooltip" id="{{row.teacherEmail}}"><i class="fa fa-pencil"></i></a>

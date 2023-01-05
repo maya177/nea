@@ -9,7 +9,7 @@ var rec;
 //this is the media stream audio source node to record
 var input; 
 
-// shim for AudioContext (shim corrects the existing audio context code) for when it is not available
+//shim for AudioContext (shim corrects the existing audio context code) for when it is not available
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 //variable defining audio context
 var audioContext
@@ -28,15 +28,14 @@ function startRecording() {
     console.log("recordButton clicked");
     var constraints = { audio: true, video:false }
 
-    //disable record button until success/fail is received from getUserMedia()
-    //basically cannot record whilst recording already happening
+    //disable record button until success/fail is received from getUserMedia() so that user cannot record whilst recording already happening
     recordButton.disabled = true;
     stopButton.disabled = false;
     pauseButton.disabled = false
 
 
     navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
-        //success in obtaining stream, so create audio context as sample rate may change after getUserMedia is called (does this on macOS when using AirPods where sr defaults to one set in OS for playback device)
+        //success in obtaining stream, so create audio context as sample rate may change after getUserMedia is called (eg. in macOS when recording using AirPods, sound rate defaults to one set in OS for playback device)
         console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
         audioContext = new AudioContext();
         //update the sr format 
@@ -44,7 +43,7 @@ function startRecording() {
         gumStream = stream;
         input = audioContext.createMediaStreamSource(stream);
 
-        //create recorded object and configure to record mono sound (1 channel) / no need to record 2 channels as this will double file size and not improve quality of sound
+        //create recorded object and configure to record mono sound (1 channel),no need to record 2 channels as this will double file size and not improve quality of sound
         rec = new Recorder(input,{numChannels:1})
 
         //start the recording process
@@ -107,5 +106,3 @@ function sendData(blob) {
           location.href = '/compare';
       });
 }
-
-

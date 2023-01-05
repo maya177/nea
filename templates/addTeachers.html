@@ -5,11 +5,11 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 
+<!--hidden elements-->
 <div class="form-group dynamic-element" style="display:none">
     <div class="row">
     <div class="col-md-2"></div>
       
-    <!-- Replace these fields -->
     <div class="col-md-4">
       <input id="teacherName" name="teacherName" class="form-control" type="text" placeholder="add a teacher's name">
     </div>
@@ -17,31 +17,23 @@
     <div class="col-md-3">
         <input id="teacherEmail" name="teacherEmail" class="form-control" type="email" placeholder="add a teacher's email">
     </div>
-
-      <!-- End of fields-->
       <div class="col-md-1">
         <p class="delete">x</p>
       </div>
     </div>
   </div>
-  <!-- END OF HIDDEN ELEMENT -->
-  
-  
-  
-  
   
   <div class="form-container">
     <form class="form-horizontal" action="" method="post">
     <fieldset>
-    <!-- Form Name -->
     <legend class="title">Add Teachers</legend>
   
     <div class="dynamic-stuff">
-      <!-- Dynamic element will be cloned here -->
-      <!-- You can call clone function once if you want it to show it a first element-->
-    </div>
+      <!--dynamic element is cloned here-->
+      <!--clone function can be called to add another row to form-->
+        </div>
     
-    <!-- Button -->
+      <!--buttons-->
     <div class="form-group">
       <div class="row">
         <div class="col-md-12">
@@ -57,14 +49,14 @@
   </form>
   </div>
 
-  <script>//Clone the hidden element and shows it
+  <script>
+    //clones and shows the hidden element (row to input an additional teacher)
     $('.add-one').click(function(){
       $('.dynamic-element').first().clone().appendTo('.dynamic-stuff').show();
       attach_delete();
     });
     
-    
-    //Attach functionality to delete buttons
+    //provides delete buttons with functionality to remove row from form
     function attach_delete(){
       $('.delete').off();
       $('.delete').click(function(){
@@ -72,3 +64,4 @@
         $(this).closest('.form-group').remove();
       });
     }</script>
+
