@@ -4,19 +4,18 @@
 
   <link rel="stylesheet" type="text/css" href="./static/css/recorder.css">
 
-  <a class='btn btn-secondary btn-lg home', href="{{ url_for('home') }}">Home</a>
+  <a class='back btn-secondary btn-lg home', href="{{ url_for('home') }}">Home</a>
 </head>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-   {% for message in messages %}
-      {{ message }}
-   {% endfor %}
-{% endif %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+      <div class="{{category}}">{{ message }}</div>
+  {% endfor %}
 {% endwith %}
 
 <body>
-  <h1 class="recorder display-1" >Audio recorder</h1>
+  <h1 class="recorder display-4" >Audio recorder</h1>
+  <h2 class="recorder subRecorder display-4">Press "Record" to start recording audio, "Pause" to pause the recording, and "Stop" to stop the recording</h2>
   <div class="content">
     <div id="controls" class="content">
       <button id="recordButton">Record</button>

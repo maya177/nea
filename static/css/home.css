@@ -15,7 +15,7 @@
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: rgb(72, 57, 135);
+    background-color: #86E79B;
     color: white;
     text-align: center;
     display: inline-flex;
@@ -31,6 +31,10 @@
     align-items: center; 
 }
 
+.button:hover{
+  color: white;
+  background-color: #00D5B1;
+}
 .heading{
   font-family: Arial, Helvetica, sans-serif;
   width:100%;
@@ -44,7 +48,15 @@
 .logout{
   margin-top: 3%;
   margin-right: 3%;
+  background-color: #00D5B1;
+  border-color: #00D5B1;
   position:absolute;
   top:0;
   right:0;
+}
+
+.logout:hover{
+  background-color: #86E79B;
+  border-color: #86E79B;
+  color: white;
 }

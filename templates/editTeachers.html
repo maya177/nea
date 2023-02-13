@@ -12,6 +12,12 @@
 <link rel="stylesheet" type="text/css" href="./static/css/editTeachers.css">
 </head>
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, message in messages %}
+      <div class="{{category}}">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
 <!--acts as back button to navigate back to user profile-->
 <a class='btn btn-secondaary btn-lg home', href="/userprofile">User Profile</a>
 

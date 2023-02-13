@@ -86,15 +86,25 @@ display: none;
     position:absolute;
     float: left;
     margin-top: 3%;
-    margin-right: 90%;
+    margin-right: 800px;
     top:0;
-    right:0;
-
-    color: #fff;
-    background-color: #6c757d;
-    border-color: #6c757d;
-    padding: 7px;;
-    border-radius: 3px;
+    left:3%;
+    background-color: #00D5B1;
+    border-color: #00D5B1;
+    color: white;
   }
   
+.home:hover{
+background-color: #86E79B;
+border-color: #86E79B;
+color: white;
+text-decoration: None;
+}
   
+.error{
+color: red;
+margin-top: 3px;
+text-align: center;
+font-family: Arial, Helvetica, sans-serif;
+font-size: 20px;
+}

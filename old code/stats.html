@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<body>
+<canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+
+<script>
+const labels = {{labels | tojson}};
+const values = {{values}};
+
+console.log(labels)
+console.log(values)
+
+var maximum = Math.max.apply(Math, values);
+
+new Chart("myChart", {
+  type: "line",
+  data: {
+    labels: labels,
+    datasets: [{
+      fill: false,
+      lineTension: 0.5,
+      backgroundColor: "rgba(0,0,255,1.0)",
+      borderColor: "rgba(0,0,255,0.1)",
+      data: values
+    }]
+  },
+  options: {
+    legend: {display: false},
+    scales: {
+      yAxes: [{ticks: {min: 0, max:Math.round(maximum/1000)*1000 +1000}}],
+    }
+  }
+});
+</script>
+
+</body>
+</html>
+
+<!--other style - fill: true, borderColor: rgb(32, 150, 80), lineTension: 0.5-->

@@ -12,6 +12,7 @@ from datetime import datetime
 import smtplib
 from flask import *
 from random import randint
+import math
 
 
 now = datetime.now()
@@ -59,28 +60,28 @@ def signup():
 
         #validating empty fields
         if not email:
-            flash("Please enter an email")
+            flash("Please enter an email", 'error')
             return redirect("/")
         elif not firstName:
-            flash("Please enter a first name")
+            flash("Please enter a first name", 'error')
             return redirect("/")
         elif not lastName:
-            flash("Please enter a last name")
+            flash("Please enter a last name", 'error')
             return redirect("/")
         elif not passwrd:
-            flash("Please enter a password")
+            flash("Please enter a password", 'error')
             return redirect("/")
         
         #validating password to ensure complexity
         if not re.search("^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{7,}$", passwrd):
-            flash("Please enter a password that is over 7 characters, has upper and lower case letters, a number, and a special character")
+            flash("Please enter a password that is over 7 characters, has upper and lower case letters, a number, and a special character", 'error')
             return redirect("/")
 
         passwrd =  hashlib.md5(passwrd.encode())
 
         #validating email input
         if not re.search("[a-z0-9]+@[a-z]+\.[a-z]{2,3}", email):
-            flash("Please enter a valid email address")
+            flash("Please enter a valid email address", 'error')
             return redirect("/")
         try:
             #inserting data into database
@@ -89,7 +90,7 @@ def signup():
             conn.close()
 
         except sqlite3.IntegrityError:
-            flash("Email already in the system, enter another email")
+            flash("Email already in the system, enter another email", 'error')
             return redirect("/")
 
         #set user session
@@ -111,21 +112,23 @@ def addTeachers():
         #data is retrieved as a multi-dictionary so cannot be selected by im_dict[i]
         items = list(im_dict.items())
 
-        for i in range(len(items)):           
-            if i%2 == 0:
-                teacherName = items[i][1]
-                teacherEmail = items[i+1][1]
+        print(items)
 
-                conn.execute("INSERT INTO teachers (teacherEmail,teacherName) VALUES(?,?)",(teacherEmail,teacherName))
+        for i in range(len(items)): 
+            print(i)     
+            teacherName = items[i][0]
+            teacherEmail = items[i][1]
+
+            conn.execute("INSERT INTO teachers (teacherEmail,teacherName) VALUES(?,?)",(teacherEmail,teacherName))
+            conn.commit()
+
+            try:
+                studentEmail = session["email"]
+                conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES(?,?)",(studentEmail,teacherEmail))
                 conn.commit()
-
-                try:
-                    studentEmail = session["email"]
-                    conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES(?,?)",(studentEmail,teacherEmail))
-                    conn.commit()
-                except:
-                    flash("please log in")
-                    return redirect(url_for("login"))
+            except:
+                flash("Please log in", 'error')
+                return redirect(url_for("login"))
         conn.close()
                 
         return redirect(url_for("home"))
@@ -146,15 +149,18 @@ def login():
 
         #validating empty fields
         if not email:
-            flash("please enter an email")
+            flash("Please enter an email", 'error')
             return redirect("/login")
         elif not passwrd:
-            flash("please enter a passwrd")
+            flash("Please enter a password", 'error')
             return redirect("/login")
 
         #retrieving user information from database
         cur.execute("SELECT email, passwrd, firstName, lastName FROM students where email = (?)", [email])
         studentrow = cur.fetchone()
+        #closing cursor and connection with database controls memory consumed, ensures the code is more consistent, 
+        # and prevents error when reassigning the cursor
+        cur.close()
         conn.close()
 
         try:
@@ -165,10 +171,10 @@ def login():
                 session["lastName"] = studentrow[3]
                 return render_template("home.html")
             else:
-                flash("incorrect password")
+                flash("Incorrect password", 'error')
                 return redirect("/login")
         except:
-           flash("this account does not exist, please sign up")
+           flash("This account does not exist, please sign up", 'error')
            return redirect("/")
 
     return render_template("login.html")
@@ -184,34 +190,37 @@ def forgotPasswrd():
         cur.execute("SELECT email FROM students where email = (?)", [email])
         studentEmail = cur.fetchone()
         
-        if len(studentEmail) == 0:
-            flash("This email does not exist, enter another email")
-            return redirect("/forgotPasswrd")
-        else:
-            session["resetEmail"] = email
-            session["resetPasswrd"] = True
-            print(session["resetPasswrd"])
+        try:
+            if len(studentEmail) == 0:
+                flash("This email does not exist, enter another email", 'error')
+                return redirect("/forgotPasswrd")
+            else:
+                session["resetEmail"] = email
+                session["resetPasswrd"] = True
 
-            #creating code and inserting it into database
-            code = randint(1000000,9999999)
-            date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-            conn.execute("INSERT INTO forgotPasswrd (email,recordTime,code) VALUES(?,?,?)",(email,date_time,code))
-            conn.commit()
-            conn.close()
+                #creating code and inserting it into database
+                code = randint(1000000,9999999)
+                date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
+                conn.execute("INSERT INTO forgotPasswrd (email,recordTime,code) VALUES(?,?,?)",(email,date_time,code))
+                conn.commit()
+                cur.close()
+                conn.close()
 
-            #sending email over SMTP server to user
-            server.starttls()
-            server.login(sender_email, password)
-            receiver_email = email
-            SUBJECT = "Password reset code"
-            TEXT = f"Your password reset code is {code}"
+                #sending email over SMTP server to user
+                server.starttls()
+                server.login(sender_email, password)
+                receiver_email = email
+                SUBJECT = "Password reset code"
+                TEXT = f"Your password reset code is {code}"
 
-            msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
-            server.sendmail(sender_email, receiver_email, msg)
-            server.quit()
+                msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
+                server.sendmail(sender_email, receiver_email, msg)
+                server.quit()
 
             return redirect(url_for("forgotPasswrdCode"))
 
+        except:
+            flash("Please enter a valid email address", 'error')
     return render_template("forgotPasswrd.html")
 
 
@@ -229,20 +238,21 @@ def forgotPasswrdCode():
                 getCode = request.form.get("code", False)
                 cur.execute("SELECT code FROM forgotPasswrd where email = (?) ORDER BY recordTime DESC", [email])
                 code = cur.fetchone()
+                cur.close()
                 conn.close()
 
                 if len(code) != 1:
-                    return("wrong code")
+                    flash("Incorrect code, please try again", 'error')
                 else:
                     if str(getCode) == str(code[0]):
                         return redirect("/resetPasswrd")
                     else:
-                        return("wrong code")
+                        flash("Incorrect code, please try again", 'error')
         else:
-            flash("Please reset password from here")
+            flash("Please reset password from here", 'error')
             return redirect(url_for("forgotPasswrd"))
     else:
-        flash("Please reset password from here")
+        flash("Please reset password from here", 'error')
         return redirect(url_for("forgotPasswrd"))
         
     return render_template("forgotPasswrdCode.html")
@@ -261,7 +271,7 @@ def resetPasswrd():
 
                 #validating inputted password
                 if not re.search("^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{7,}$", passwrd):
-                    flash("Please enter a password that is over 7 characters, has upper and lower case letters, a number, and a special character")
+                    flash("Please enter a password that is over 7 characters, has upper and lower case letters, a number, and a special character", 'error')
                     return redirect("/resetPasswrd")
                 
                 newPasswrd = hashlib.md5(passwrd.encode())
@@ -269,7 +279,7 @@ def resetPasswrd():
                 #updating database record to new password 
                 cur.execute("UPDATE students set passwrd = (?) WHERE email = (?)", (str(newPasswrd.hexdigest()), str(email)))
                 conn.commit()
-
+                cur.close()
                 conn.close()
                 return redirect(url_for("login"))
 
@@ -291,24 +301,27 @@ def logout():
 def home():
     return render_template("home.html")
 
-
 @app.route("/recorder", methods=['GET','POST'])
 def recorder():
     if request.method == 'POST':
-        #retrieves audio data and stores file locally
-        filename = datetime.now().strftime("%Y-%m-%d-%H-%M")
-        f = open(f'./static/recordings/{filename}.wav', 'wb')
-        f.write(request.data)
-        f.close()
+        try:
+            #retrieves audio data and stores file locally
+            filename = datetime.now().strftime("%Y-%m-%d-%H-%M")
+            f = open(f'./static/recordings/{filename}.wav', 'wb')
+            f.write(request.data)
+            f.close()
 
-        #the 'x' variable stores the audio data and the 'fs' variable stores the sampling rate in Hertz of the audio recorded
-        x, fs = librosa.load(f'./static/recordings/{filename}.wav')
+            #the 'x' variable stores the audio data and the 'fs' variable stores the sampling rate in Hertz of the audio recorded
+            x, fs = librosa.load(f'./static/recordings/{filename}.wav')
 
-        session["x"] = x
-        session["fs"] = fs
+            session["x"] = x
+            session["fs"] = fs
 
-        response = jsonify("File received and saved!")
-        return response
+            response = jsonify("File received and saved!")
+            return response
+        except:
+            flash("Please first calculate a threshold", 'error')
+            return redirect("/threshold1")
     
     return render_template("recorder.html")
 
@@ -321,7 +334,7 @@ def threshold1():
             #using JavaScript success function to redirect to threshold2 page
             return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         except:
-            flash("error, try again")
+            flash("Error, try again", 'error')
             return redirect("/threshold1")
     return render_template("threshold1.html")
    
@@ -336,11 +349,11 @@ def threshold2():
             t_x, t_fs = librosa.load(path)
 
             #zero crossing rate mean value extracted
-            zcrs = librosa.feature.zero_crossing_rate(t_x).mean()
+            zcrs_unscaled = librosa.feature.zero_crossing_rate(t_x).mean()
             #central spectroid mean value extracted
-            cent = librosa.feature.spectral_centroid(y=t_x, sr=t_fs).mean()
+            cent_unscaled = librosa.feature.spectral_centroid(y=t_x, sr=t_fs).mean()
             #converting the sample rate to the mel scale to represent frequency
-            mel = 2595.0 * np.log10(1.0 + t_fs / 700.0)
+            mel_unscaled = 2595.0 * np.log10(1.0 + t_fs / 700.0)
 
             ##loudness - Root Mean Square - value extracted
             #computing the magnitude spectrogram
@@ -356,16 +369,29 @@ def threshold2():
             #applying A-weighting values to magnitude spectogram
             spec_dba = spec_db + a_weights
             #calculating final loudness value
-            loudness = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
+            loudness_unscaled = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
+            
+            print("multipliers: ")
+            print(data['pitch'])
+            print(data['volume'])
 
-            print(zcrs)
-            print(cent)
-            print(mel)
-            print(loudness)
+
+            zcrs = zcrs_unscaled * data['pitch']
+            cent = cent_unscaled * data['pitch']
+            mel = mel_unscaled * data['pitch']
+            loudness = loudness_unscaled * data['volume']
+
+            totalThreshold = zcrs/2 + cent/2 + mel/2 + 5*(1-math.exp(loudness*-1))
+
+            print(zcrs_unscaled, data['pitch'], zcrs)
+            print(cent_unscaled, data['pitch'], cent)
+            print(mel_unscaled, data['pitch'], mel)
+            print(loudness_unscaled, data['volume'], loudness)
+
+
 
             #need to scale them here and multiply by scale factors
             if "email" in session:
-                totalThreshold = 1
                 conn = get_db_connection()
                 studentEmail = session["email"]
                 date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
@@ -376,7 +402,7 @@ def threshold2():
 
                 return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
         except ValueError:
-            flash("error")
+            flash("Error", 'error')
             return redirect("/threshold2")
     else:
         return render_template("threshold2.html")
@@ -423,7 +449,7 @@ def compare():
         mel = round(mel,2)
         loudness = round(loudness,2)
 
-        total = 0.67
+        totalAudio = zcrs/2 + cent/2 + mel/2 + 5*(1-math.exp(loudness*-1))
         #----------------------------------------------------------------------
         try:
             cur.execute("SELECT zcrs, cent, mel, loudness, totalThreshold FROM thresholds where studentEmail = (?) ORDER BY recordTime DESC", [email])
@@ -439,12 +465,10 @@ def compare():
 
         #----------------------------------------------------------------------
         #compare values using above
-        a = 100
-        b = 20
-        if b<a:
+        if totalAudio<t_total:
             comp = "The current audio level is below your recorded threshold"
         else:
-            comp = "The current audio level is above your recorded threshold"
+            comp = "The current audio level is at or above your recorded threshold"
 
         #----------------------------------------------------------------------
         #get teachers/send to teachers
@@ -460,29 +484,27 @@ def compare():
             cur.execute("SELECT teacherEmail FROM teachers where teacherName = (?)", [teacherName])
             teacherEmail = cur.fetchone()
 
-
             cur.execute("SELECT firstName FROM students where email = (?)", [email])
             studentName = cur.fetchone()
 
             receiver_email = teacherEmail
             SUBJECT = "Attend to child"
-            if total > t_total:
+            if totalAudio > t_total:
                 exceed = "exceeded"
             else:
                 exceed = "did not exceed"
-            TEXT = f"{studentName[0]}'s threshold of {t_total} {exceed} the classroom noise level of {total}, please check on them"
+            TEXT = f"""The classroom noise level of {round(totalAudio,2)} {exceed} {studentName[0]}'s threshold of {round(t_total,2)}, please check on them\n\nRecorded audio values:\nSmoothness (Zero-Crossing Rate): {round(zcrs,2)}\nBrightness (Spectral Centroid): {round(cent,2)}\nFrequency (Mel Spectogram): {round(t_mel,2)}\nLoudness (Root Mean Squared): {round(t_loudness,2)}\n\nThreshold values:\nSmoothness (Zero-Crossing Rate): {round(t_zcrs,2)}\nBrightness (Spectral Centroid): {round(t_cent,2)}\nFrequency (Mel Spectogram): {round(t_mel,2)}\nLoudness (Root Mean Squared): {round(t_loudness,2)}"""
             msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
             server.sendmail(sender_email, receiver_email, msg)
             server.quit()
             return redirect(url_for("home"))
 
-        print(teachers)
-
+        cur.close()
         conn.close()
-        return render_template("compare.html", zcrs=zcrs, cent=cent, mel=mel, loudness=loudness, teachers=teachers, comp=comp)
+        return render_template("compare.html", totalAudio=round(totalAudio,2), zcrs=zcrs, cent=cent, mel=mel, loudness=loudness, teachers=teachers, comp=comp)
 
     else:
-        flash("no audio recorded")
+        flash("No audio recorded", 'error')
         return redirect(url_for("recorder"))
         
 
@@ -497,14 +519,21 @@ def userprofile():
 
         cur.execute("SELECT email, firstName, lastName FROM students where email = (?)", [email])
         studentrow = cur.fetchone()
+
+        cur.execute("SELECT thresholds.totalThreshold, thresholds.recordTime FROM thresholds, students where students.email = (?) AND students.email = thresholds.studentEmail", [email])
+        data = cur.fetchall()
+
+        #need thresholds (data) to be in list of tuples of string, int 
+        values = [item[0] for item in data]
+        labels = [str(item[1][:10]) for item in data]
+        
+        conn.commit()
         conn.close()
         
-        return render_template(("userprofile.html"), email = studentrow[0], firstName = studentrow[1], lastName = studentrow[2])
+        return render_template(("userprofile.html"), email = studentrow[0], firstName = studentrow[1], lastName = studentrow[2], values = values, labels = labels)
     else:
-        flash("not logged in, please log in")
+        flash("Not logged in, please log in", 'error')
         return redirect(url_for("login"))
-
-
 
 @app.route("/editTeachers",methods=['POST','GET'])
 def editTeachers():
@@ -516,11 +545,12 @@ def editTeachers():
 
         cur.execute("SELECT teachers.teacherName, teachers.teacherEmail FROM teachers,students,relationships where students.email = (?) and relationships.studentEmail = students.email and relationships.teacherEmail = teachers.teacherEmail", [email])
         teachers = cur.fetchall()
+        cur.close()
         conn.close()
         
         return render_template("editTeachers.html", teachers=teachers)
     else:
-        flash("not logged in, please log in")
+        flash("Not logged in, please log in", 'error')
         return redirect(url_for("login"))
 
 @app.route("/ajax_add",methods=["POST","GET"])
@@ -566,6 +596,7 @@ def ajax_add():
                 conn.execute("INSERT INTO relationships (studentEmail,teacherEmail) VALUES (?,?)", (str(email),teacherEmail))
                 conn.commit()
 
+            cur.close()
             conn.close()
             msg = 'new record created successfully'
         
@@ -588,13 +619,13 @@ def ajax_update():
 
         conn.commit()
         cur.close()
+        conn.close()
         msg = 'Record successfully Updated'
     return jsonify(msg)
 
 @app.route("/ajax_delete",methods=["POST","GET"])
 def ajax_delete(): 
     conn = get_db_connection()
-    cur = conn.cursor()
 
     if request.method == 'POST':
         getEmail = request.form['string']
@@ -604,7 +635,7 @@ def ajax_delete():
         conn.execute('DELETE FROM relationships WHERE teacherEmail = ?', [getEmail])
 
         conn.commit()
-        cur.close()
+        conn.close()
         msg = 'Record deleted successfully'
     return jsonify(msg) 
 

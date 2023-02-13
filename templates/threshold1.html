@@ -1,21 +1,19 @@
 <!--the audio element is a DOM element used for embedding sounds from different sources in a webpage-->
 <!--<audio> is only used for loading and playing souds-->
 
-  <link rel="stylesheet" type="text/css" href="./static/css/threshold1.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" 
-  integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  
-  <a class='btn btn-secondary btn-lg home', href="{{ url_for('home') }}">Home</a>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" 
+integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-   {% for message in messages %}
-      {{ message }}
-   {% endfor %}
-{% endif %}
+<link rel="stylesheet" type="text/css" href="./static/css/threshold1.css">
+<a class='back btn-secondary btn-lg', href="{{ url_for('home') }}">Home</a>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+    <div class="{{category}}">{{ message }}</div>
+{% endfor %}
 {% endwith %}
 
 <div class="content">
@@ -24,8 +22,8 @@
   <div class="audio-duration col item">
     <a class="h4">Sound 1</a>
     <div class="audio-duration-indicator"> </div>  
-      <button enabled type="play" name = "btn btn-play" class="btn btn-play  btn-info btn-lg" id="play-btn1">Play</button>
-      <button disabled class="btn btn-pause1 btn-success btn-lg" id="pause-btn1">Pause</button>
+      <button enabled type="play" name = "btn btn-play" class="play btn btn-play  btn-info btn-lg" id="play-btn1">Play</button>
+      <button disabled class="pause btn btn-pause1 btn-success btn-lg" id="pause-btn1">Pause</button>
       <button class="submit btn-outline-primary btn-lg" id = "submit1">Submit</button>
   </div>
 
@@ -34,28 +32,28 @@
   <div class="audio-duration col item">
       <a class="h4">Sound 2</a>
       <div class="audio-duration-indicator row"> </div>        
-        <button enabled type="play" class="btn btn-play  btn-info btn-lg" id="play-btn2">Play</button>
-        <button disabled class="btn btn-pause btn-success btn-lg" id="pause-btn2">Pause</button>
+        <button enabled type="play" class="play btn btn-play  btn-info btn-lg" id="play-btn2">Play</button>
+        <button disabled class="pause btn btn-pause btn-success btn-lg" id="pause-btn2">Pause</button>
         <button class="submit btn-outline-primary btn-lg" id = "submit2">Submit</button>
     </div>
 
 
   <audio class='audio' id='audio3' src='./static/audio/classroom.mp3'></audio>
   <div class="audio-duration col item">
-    <a class="h4">Sound 2</a>
+    <a class="h4">Sound 3</a>
       <div class="audio-duration-indicator"> </div>        
-        <button enabled type = "play" class="btn btn-play  btn-info btn-lg" id="play-btn3">Play</button>
-        <button disabled class="btn btn-pause btn-success btn-lg" id="pause-btn3">Pause</button>
+        <button enabled type = "play" class="play btn btn-play  btn-info btn-lg" id="play-btn3">Play</button>
+        <button disabled class="pause btn btn-pause btn-success btn-lg" id="pause-btn3">Pause</button>
         <button class="submit btn-outline-primary btn-lg" id = "submit3">Submit</button>
     </div>
 
 
   <audio class='audio' id='audio4' src='./static/audio/laughing.mp3'></audio>
   <div class="audio-duration col item">
-    <a class="h4">Sound 3</a>
+    <a class="h4">Sound 4</a>
       <div class="audio-duration-indicator"> </div>        
-        <button enabled type="play" class="btn btn-play  btn-info btn-lg" id="play-btn4">Play</button>
-        <button disabled class="btn btn-pause btn-success btn-lg" id="pause-btn4">Pause</button>
+        <button enabled type="play" class="play btn btn-play  btn-info btn-lg" id="play-btn4">Play</button>
+        <button disabled class="pause btn btn-pause btn-success btn-lg" id="pause-btn4">Pause</button>
         <button class="submit btn-outline-primary btn-lg" id = "submit4">Submit</button>
     </div>
 
@@ -63,10 +61,10 @@
   <audio class='audio' id='audio5' src='./static/audio/rock.mp3'></audio>
   <div class="audio-duration col item">
     
-    <a class="h4">Sound 2</a>
+    <a class="h4">Sound 5</a>
       <div class="audio-duration-indicator"></div>        
-        <button enabled type="play" class="btn btn-play  btn-info btn-lg" id="play-btn5">Play</button>
-        <button disabled class="btn btn-pause btn-success btn-lg" id="pause-btn5">Pause</button>
+        <button enabled type="play" class="play btn btn-play  btn-info btn-lg" id="play-btn5">Play</button>
+        <button disabled class="pause btn btn-pause btn-success btn-lg" id="pause-btn5">Pause</button>
         <button class="submit btn-outline-primary btn-lg" id = "submit5">Submit</button>
     </div>
   </div>
