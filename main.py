@@ -542,13 +542,33 @@ def editTeachers():
     
     if "email" in session:
         email = session["email"]
-
+        
         cur.execute("SELECT teachers.teacherName, teachers.teacherEmail FROM teachers,students,relationships where students.email = (?) and relationships.studentEmail = students.email and relationships.teacherEmail = teachers.teacherEmail", [email])
         teachers = cur.fetchall()
         cur.close()
         conn.close()
         
         return render_template("editTeachers.html", teachers=teachers)
+    else:
+        flash("Not logged in, please log in", 'error')
+        return redirect(url_for("login"))
+
+@app.route("/changeEmail", methods=['POST', 'GET'])
+def changeEmail():
+    conn = get_db_connection()
+    if "email" in session:
+        oldEmail = session["email"]
+
+        newEmail = str(request.form.get("email", False))
+        if request.method == 'POST':
+            conn.execute("UPDATE students SET email = ? WHERE email = ?", (str(newEmail), str(oldEmail)))
+            conn.execute("UPDATE relationships set studentEmail = (?) WHERE studentEmail = (?)", (str(newEmail), str(oldEmail)))
+            conn.execute("UPDATE thresholds set studentEmail = (?) WHERE studentEmail = (?)", (str(newEmail), str(oldEmail)))
+            conn.commit()
+            conn.close()
+            return redirect(url_for("home"))
+
+        return render_template("changeEmail.html", email=oldEmail)
     else:
         flash("Not logged in, please log in", 'error')
         return redirect(url_for("login"))
