@@ -99,7 +99,6 @@ def signup():
         session["lastName"] = lastName
         
         return redirect(url_for("addTeachers"))
-
     return render_template("signup.html")
 
 @app.route('/addTeachers', methods=['POST','GET'])
@@ -561,6 +560,9 @@ def changeEmail():
 
         newEmail = str(request.form.get("email", False))
         if request.method == 'POST':
+            if not re.search("[a-z0-9]+@[a-z]+\.[a-z]{2,3}", newEmail):
+                flash("Please enter a valid email address", 'error')
+                return redirect("/")
             conn.execute("UPDATE students SET email = ? WHERE email = ?", (str(newEmail), str(oldEmail)))
             conn.execute("UPDATE relationships set studentEmail = (?) WHERE studentEmail = (?)", (str(newEmail), str(oldEmail)))
             conn.execute("UPDATE thresholds set studentEmail = (?) WHERE studentEmail = (?)", (str(newEmail), str(oldEmail)))
