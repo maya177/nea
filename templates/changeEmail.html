@@ -1,26 +1,29 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-<link rel="stylesheet" type="text/css" href="./static/css/forgotPasswrd.css">
+  <link rel="stylesheet" type="text/css" href="./static/css/forgotPasswrd.css">
+</head>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-      <div class="{{category}}">{{ message }}</div>
-  {% endfor %}
-{% endwith %}
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="{{category}}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
 
-<div class="content col">
+  <div class="content col">
+    <a class='back btn-secondary btn-lg', href="{{ url_for('userprofile') }}">Back</a>
+    <p class="head display-4">Your current email is: "{{email}} </p>
 
-<a class='back btn-secondary btn-lg', href="{{ url_for('login') }}">Back</a>
-<p class="head display-4">Your current email is: "{{email}} </p>
+    <p class="head display-4">Please enter your new email </p>
 
-<p class="head display-4">Please enter your new email </p>
-
-<form method="POST" action="" class="row" style="width: 1000px; margin-left: 35%; margin-top: 20%;">
-  <input  class = "input form-control" name = "email" type = "email" placeholder="Email" style="width:30%;"></input>
-  <input class = "submit btn btn-primary" type="submit" placeholder = "Submit">
-</form>
-</div>
+    <form method="POST" action="" class="row" style="width: 1000px; margin-left: 35%; margin-top: 20%;">
+      <input  class = "input form-control" name = "email" type = "email" placeholder="Email" style="width:30%;"></input>
+      <input class = "submit btn btn-primary" type="submit" placeholder = "Submit">
+    </form>
+  </div>
+</body>

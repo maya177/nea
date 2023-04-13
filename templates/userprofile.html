@@ -1,76 +1,80 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-<link rel="stylesheet" type="text/css" href="./static/css/userprofile.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+  <link rel="stylesheet" type="text/css" href="./static/css/userprofile.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 
+  <a class='back btn btn-secondary btn-lg', href="{{ url_for('home') }}">Home</a>
+</head>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% for category, message in messages %}
-      <div class="{{category}}">{{ message }}</div>
-  {% endfor %}
-{% endwith %}
-
-<a class='back btn btn-secondary btn-lg', href="{{ url_for('home') }}">Home</a>
-
-<div class="content">
-    <h1 class="display-4 text-center" style="color: black; padding-bottom: 100px;">User Profile</h1>
-
-    <div class="card p-3 py-4">
-        <div class="text-center col"> 
-            <h1 class="h4 label">Email:</h1>
-            <p class="h5 data">{{ email }}</p>
-            <hr></hr>
-
-            <h1 class="h4 label">First Name:</h1>
-            <p class="h5 data">{{ firstName }}</p>
-            <hr></hr>
-
-            <h1 class="h4 label">Last Name:</h1>
-            <p class="h5 data">{{ lastName }}</p>
-            <hr></hr>
-
-            <a style="margin-top: 20px;" class='teachers btn btn-success btn-lg', href="{{ url_for('editTeachers') }}">Edit Teachers</a>
-            <a style="margin-top: 20px;" class='teachers btn btn-success btn-lg', href="{{ url_for('changeEmail') }}">Change Email</a>
-        </div>
-    </div>
-</div>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+        <div class="{{category}}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
 
 
-<div class="myChart">
-    <h1 class="title heading-4">Graph of past threshold values</h1>
-    <canvas id="myChart"></canvas>
-</div>
+  <div class="content">
+      <h1 class="display-4 text-center" style="color: black; padding-bottom: 100px;">User Profile</h1>
 
-<script>
-    const labels = {{labels | tojson}};
-    const values = {{values}};
-    
-    console.log(labels)
-    console.log(values)
-    
-    var maximum = Math.max.apply(Math, values);
-    
-    new Chart("myChart", {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [{
-          fill: false,
-          lineTension: 0.5,
-          backgroundColor: "rgba(0,0,255,1.0)",
-          borderColor: "rgba(0,0,255,0.1)",
-          data: values
-        }]
-      },
-      options: {
-        legend: {display: false},
-        scales: {
-          yAxes: [{ticks: {min: 0, max:Math.round(maximum/1000)*1000 +1000}}],
+      <div class="card p-3 py-4">
+          <div class="text-center col"> 
+              <h1 class="h4 label">Email:</h1>
+              <p class="h5 data">{{ email }}</p>
+              <hr></hr>
+
+              <h1 class="h4 label">First Name:</h1>
+              <p class="h5 data">{{ firstName }}</p>
+              <hr></hr>
+
+              <h1 class="h4 label">Last Name:</h1>
+              <p class="h5 data">{{ lastName }}</p>
+              <hr></hr>
+
+              <a style="margin-top: 20px;" class='teachers btn btn-success btn-lg', href="{{ url_for('editTeachers') }}">Edit Teachers</a>
+              <a style="margin-top: 20px;" class='teachers btn btn-success btn-lg', href="{{ url_for('changeEmail') }}">Change Email</a>
+          </div>
+      </div>
+  </div>
+
+
+  <div class="myChart">
+      <h1 class="title heading-4">Graph of past threshold values</h1>
+      <canvas id="myChart"></canvas>
+  </div>
+
+  <script>
+      const labels = {{labels | tojson}};
+      const values = {{values}};
+      
+      console.log(labels)
+      console.log(values)
+      
+      var maximum = Math.max.apply(Math, values);
+      
+      new Chart("myChart", {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            fill: false,
+            lineTension: 0.5,
+            backgroundColor: "rgba(0,0,255,1.0)",
+            borderColor: "rgba(0,0,255,0.1)",
+            data: values
+          }]
+        },
+        options: {
+          legend: {display: false},
+          scales: {
+            yAxes: [{ticks: {min: 0, max:Math.round(maximum/1000)*1000 +1000}}],
+          }
         }
-      }
-    });
-</script>
+      });
+  </script>
+</body>

@@ -13,14 +13,14 @@ import smtplib
 from flask import *
 from random import randint
 import math
-
+from utils import calculateValues, roundValues, sendEmail
 
 now = datetime.now()
 app = Flask(__name__)
 
 #setting up SMTP email server
-sender_email = "mayaNbridgman@gmail.com"
-receiver_email = ""
+senderEmail = "mayaNbridgman@gmail.com"
+receiverEmail = ""
 password = "lboesehsgspqsxny"
 SUBJECT = ""
 TEXT = ""
@@ -92,7 +92,6 @@ def signup():
         except sqlite3.IntegrityError:
             flash("Email already in the system, enter another email", 'error')
             return redirect("/")
-
         #set user session
         session["email"] = email
         session["firstName"] = firstName
@@ -338,6 +337,18 @@ def threshold1():
     return render_template("threshold1.html")
    
 @app.route("/threshold2", methods=['GET','POST'])
+def scaleValues(zcrs, cent, mel, loudness, data):
+    values = {'zcrs': zcrs, 
+              'cent': cent, 
+              'mel': mel, 
+              'loudness': loudness}
+    for key in values.keys():
+        if key == 'loudness':
+            values[key] = values[key] * data['volume']
+        else:
+            values[key] = values[key] * data['pitch']
+
+
 def threshold2():
     if request.method == 'POST':
         try:
@@ -347,49 +358,10 @@ def threshold2():
             #t_ indicates temporary use
             t_x, t_fs = librosa.load(path)
 
-            #zero crossing rate mean value extracted
-            zcrs_unscaled = librosa.feature.zero_crossing_rate(t_x).mean()
-            #central spectroid mean value extracted
-            cent_unscaled = librosa.feature.spectral_centroid(y=t_x, sr=t_fs).mean()
-            #converting the sample rate to the mel scale to represent frequency
-            mel_unscaled = 2595.0 * np.log10(1.0 + t_fs / 700.0)
-
-            ##loudness - Root Mean Square - value extracted
-            #computing the magnitude spectrogram
-            n_fft = 2048
-            hop_length = 1024
-            spec_mag = abs(librosa.stft(t_x, n_fft=n_fft, hop_length=hop_length))
-            #converting the spectogram into decibels
-            spec_db = librosa.amplitude_to_db(spec_mag)
-            #calculating A-weighting values
-            freqs = librosa.fft_frequencies(sr=t_fs, n_fft=n_fft)
-            a_weights = librosa.A_weighting(freqs)
-            a_weights = np.expand_dims(a_weights, axis=1)
-            #applying A-weighting values to magnitude spectogram
-            spec_dba = spec_db + a_weights
-            #calculating final loudness value
-            loudness_unscaled = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
-            
-            print("multipliers: ")
-            print(data['pitch'])
-            print(data['volume'])
-
-
-            zcrs = zcrs_unscaled * data['pitch']
-            cent = cent_unscaled * data['pitch']
-            mel = mel_unscaled * data['pitch']
-            loudness = loudness_unscaled * data['volume']
-
+            zcrs,cent,mel,loudness = calculateValues(t_x,t_fs)
+            zcrs,cent,mel,loudness = roundValues(zcrs, cent, mel, loudness)
             totalThreshold = zcrs/2 + cent/2 + mel/2 + 5*(1-math.exp(loudness*-1))
 
-            print(zcrs_unscaled, data['pitch'], zcrs)
-            print(cent_unscaled, data['pitch'], cent)
-            print(mel_unscaled, data['pitch'], mel)
-            print(loudness_unscaled, data['volume'], loudness)
-
-
-
-            #need to scale them here and multiply by scale factors
             if "email" in session:
                 conn = get_db_connection()
                 studentEmail = session["email"]
@@ -417,67 +389,36 @@ def compare():
         fs = session["fs"]
         email = session["email"]
 
-        #----------------------------------------------------------------------
-        ##compute recording values
-        #zero crossing rate
-        zcrs = librosa.feature.zero_crossing_rate(x).mean()
-        #central spectroid
-        cent = librosa.feature.spectral_centroid(y=x, sr=fs).mean()
-        #mel scale converted freq
-        mel = 2595.0 * np.log10(1.0 + fs / 700.0)
-
-        #loudness in rms
-        # Compute the spectrogram (magnitude)
-        n_fft = 2048
-        hop_length = 1024
-        spec_mag = abs(librosa.stft(x, n_fft=n_fft, hop_length=hop_length))
-        # Convert the spectrogram into dB
-        spec_db = librosa.amplitude_to_db(spec_mag)
-        # Compute A-weighting values
-        freqs = librosa.fft_frequencies(sr=fs, n_fft=n_fft)
-        a_weights = librosa.A_weighting(freqs)
-        a_weights = np.expand_dims(a_weights, axis=1)
-        # Apply the A-weghting to the spectrogram in dB
-        spec_dba = spec_db + a_weights
-        # Compute the "loudness" value
-        loudness = librosa.feature.rms(S=librosa.db_to_amplitude(spec_dba)).mean()
-        #----------------------------------------------------------------------
-
-        zcrs = round(zcrs,2)
-        cent = round(cent,2)
-        mel = round(mel,2)
-        loudness = round(loudness,2)
+        ##compute recorded audio values and score
+        zcrs,cent,mel,loudness = calculateValues(x,fs)
+        zcrs,cent,mel,loudness = roundValues(zcrs, cent, mel, loudness)
 
         totalAudio = zcrs/2 + cent/2 + mel/2 + 5*(1-math.exp(loudness*-1))
-        #----------------------------------------------------------------------
+
         try:
             cur.execute("SELECT zcrs, cent, mel, loudness, totalThreshold FROM thresholds where studentEmail = (?) ORDER BY recordTime DESC", [email])
             rec_threshold = cur.fetchone()
 
-            t_zcrs = rec_threshold[0]
-            t_cent = rec_threshold[1]
-            t_mel = rec_threshold[2]
-            t_loudness = rec_threshold[3]
-            t_total= rec_threshold[4]
+            threshold_zcrs = rec_threshold[0]
+            threshold_cent = rec_threshold[1]
+            threshold_mel = rec_threshold[2]
+            threshold_loudness = rec_threshold[3]
+            threshold_total= rec_threshold[4]
         except:
             return redirect(url_for("threshold"))
 
         #----------------------------------------------------------------------
         #compare values using above
-        if totalAudio<t_total:
+        if totalAudio<threshold_total:
             comp = "The current audio level is below your recorded threshold"
         else:
             comp = "The current audio level is at or above your recorded threshold"
-
         #----------------------------------------------------------------------
         #get teachers/send to teachers
         cur.execute("SELECT teachers.teacherName FROM teachers, students, relationships where students.email = (?) AND students.email = relationships.studentEmail AND teachers.teacherEmail = relationships.teacherEmail", [email])
         teachers = cur.fetchall()
 
         if request.method == 'POST':
-            server.starttls()
-            server.login(sender_email, password)
-
             teacherName = request.form["teacher"]
 
             cur.execute("SELECT teacherEmail FROM teachers where teacherName = (?)", [teacherName])
@@ -486,16 +427,7 @@ def compare():
             cur.execute("SELECT firstName FROM students where email = (?)", [email])
             studentName = cur.fetchone()
 
-            receiver_email = teacherEmail
-            SUBJECT = "Attend to child"
-            if totalAudio > t_total:
-                exceed = "exceeded"
-            else:
-                exceed = "did not exceed"
-            TEXT = f"""The classroom noise level of {round(totalAudio,2)} {exceed} {studentName[0]}'s threshold of {round(t_total,2)}, please check on them\n\nRecorded audio values:\nSmoothness (Zero-Crossing Rate): {round(zcrs,2)}\nBrightness (Spectral Centroid): {round(cent,2)}\nFrequency (Mel Spectogram): {round(t_mel,2)}\nLoudness (Root Mean Squared): {round(t_loudness,2)}\n\nThreshold values:\nSmoothness (Zero-Crossing Rate): {round(t_zcrs,2)}\nBrightness (Spectral Centroid): {round(t_cent,2)}\nFrequency (Mel Spectogram): {round(t_mel,2)}\nLoudness (Root Mean Squared): {round(t_loudness,2)}"""
-            msg = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
-            server.sendmail(sender_email, receiver_email, msg)
-            server.quit()
+            sendEmail(totalAudio, threshold_total, zcrs, cent, threshold_mel, threshold_loudness, threshold_zcrs, threshold_cent, teacherEmail, studentName)
             return redirect(url_for("home"))
 
         cur.close()

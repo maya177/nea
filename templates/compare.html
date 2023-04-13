@@ -1,62 +1,57 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="./static/css/compare.css">
+    <a class='back btn btn-secondary btn-lg', href="{{ url_for('home') }}">Home</a>
+</head>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.0/css/bootstrap.min.css" integrity="sha256-/ykJw/wDxMa0AQhHDYfuMEwVb4JHMx9h4jD4XvHqVzU=" crossorigin="anonymous" />
+<body>
+    <h1 class="head display-4" style="margin-top: 3%;">The audio features of the sound you recorded are:</h1>
+
+    <div class="content">
+        <div class="col card">
+            <div class="row feature h4">
+                <p>Smoothness:</p>
+                <p class="value">{{zcrs}}</p>
+            </div>
+
+            <div class="row feature h4">
+                <p>Brightness: </p>
+                <p class="value">{{cent}}</p>
+            </div>
+
+            <div class="row feature h4">
+                <p>Frequency: </p>
+                <p class="value">{{mel}}</p>
+            </div>
+
+            <div class="row feature h4">
+                <p>Loudness: </p>
+                <p class="value">{{loudness}}</p>
+            </div>
 
 
-<link rel="stylesheet" type="text/css" href="./static/css/compare.css">
-
-
-<a class='back btn btn-secondary btn-lg', href="{{ url_for('home') }}">Home</a>
-
-<h1 class="head display-4" style="margin-top: 3%;">The audio features of the sound you recorded are:</h1>
-
-<div class="content">
-
-    <div class="col card">
-        <div class="row feature h4">
-            <p>Smoothness:</p>
-            <p class="value">{{zcrs}}</p>
+            <div class="row feature h4">
+                <p>Total audio score: </p>
+                <p class="value">{{totalAudio}}</p>
+            </div>
         </div>
 
-        <div class="row feature h4">
-            <p>Brightness: </p>
-            <p class="value">{{cent}}</p>
-        </div>
+        <p class="h4" style="margin-top:40px;">{{comp}}</p>
+        <p class="h4" style="margin-top:30px;">Send the results to a teacher: </p>
 
-        <div class="row feature h4">
-            <p>Frequency: </p>
-            <p class="value">{{mel}}</p>
-        </div>
-
-        <div class="row feature h4">
-            <p>Loudness: </p>
-            <p class="value">{{loudness}}</p>
-        </div>
-
-
-        <div class="row feature h4">
-            <p>Total audio score: </p>
-            <p class="value">{{totalAudio}}</p>
-        </div>
-
+        <form action="" method="POST" class=>
+        <select name="teacher" class="custom-select" style="width: 20%;" required="true">
+        {% for item in teachers %}
+        <option value="{{ item.teacherName }}">{{ item.teacherName }}</option>
+        {% endfor %}
+        </select>
+        
+        <button type="submit" class="submit btn btn-primary">Submit</button>
+        </form>
     </div>
-
-    <p class="h4" style="margin-top:40px;">{{comp}}</p>
-
-    <p class="h4" style="margin-top:30px;">Send the results to a teacher: </p>
-
-    <form action="" method="POST" class=>
-
-    <select name="teacher" class="custom-select" style="width: 20%;" required="true">
-    {% for item in teachers %}
-    <option value="{{ item.teacherName }}">{{ item.teacherName }}</option>
-    {% endfor %}
-    </select>
-    
-    <button type="submit" class="submit btn btn-primary">Submit</button>
-    </form>
-</div>
+</body>

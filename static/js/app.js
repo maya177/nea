@@ -31,7 +31,7 @@ function startRecording() {
     //disable record button until success/fail is received from getUserMedia() so that user cannot record whilst recording already happening
     recordButton.disabled = true;
     stopButton.disabled = false;
-    pauseButton.disabled = false
+    pauseButton.disabled = false;
 
 
     navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
